@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-interface ICategory extends Document {
+export interface ICategory extends Document {
     name: mongoose.Schema.Types.ObjectId;
 }
 
