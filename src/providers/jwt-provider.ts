@@ -1,7 +1,13 @@
 import JWT, { SignOptions } from 'jsonwebtoken';
-
 interface JwtPayload {
   [key: string]: any;
+}
+
+export interface JwtPayloadReturn {
+  _id: string;
+  name:string;
+  email:string;
+  role:string;
 }
 
 const generateToken = async (
@@ -23,11 +29,18 @@ const generateToken = async (
 const verifyToken = async (
   token: string,
   secretSignature: string
-): Promise<JwtPayload | Error> => {
+): Promise<JwtPayloadReturn | Error> => {
   try {
-    return JWT.verify(token, secretSignature) as JwtPayload;
+    const res = await JWT.verify(token, secretSignature) as JwtPayloadReturn ;
+    const data = {
+      _id: res._id,
+      name: res.name,
+      email: res.email,
+      role: res.role
+    }
+    return data;
   } catch (error) {
-    return new Error( error.message);
+    return new Error(error instanceof Error ? error.message : String(error));
   }
 };
 

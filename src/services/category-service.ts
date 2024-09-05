@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongoose';
 import Category, { ICategory } from '../models/category';
 
 const getAllCategoryService = ()  => {
