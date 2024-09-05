@@ -18,7 +18,7 @@ mongoose
     console.error(err);
   });
 
-app.get("/status", (req: Request, res: Response) => {
+app.get("/api/status", (req: Request, res: Response) => {
   return res.send("Port is active!");
 });
 
