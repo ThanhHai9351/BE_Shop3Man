@@ -89,5 +89,25 @@ const deleteCategory = async (req: Request, res: Response): Promise<Response> =>
   }
 };
 
-const CategoryController = {getAllCategories,createCategory,updateCategory,deleteCategory}
+const detailCategory = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "ID not found!",
+      });
+    }
+
+    const respon = await CategoryService.detailCategoryService(id);
+    return res.status(200).json(respon);
+  } catch (err) {
+    return res.status(500).json({
+      status: "ERROR",
+      message: err instanceof Error ? err.message : 'Unknown error occurred',
+    });
+  }
+};
+
+const CategoryController = {getAllCategories,createCategory,updateCategory,deleteCategory, detailCategory}
 export default CategoryController;

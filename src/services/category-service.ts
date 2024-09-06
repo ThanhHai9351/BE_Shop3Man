@@ -88,7 +88,29 @@ const deleteCategoryService = (id:string) => {
   });
 };
 
+const detailCategoryService = (id : string) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const category = await Category.findById(id);
+      if(!category)
+      {
+        resolve({
+          status: "Error",
+          message: "Category not found!",
+        });
+      }
+      resolve({
+        status: "OK",
+        message: "Get detail category successfully!",
+        data: category,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
-const CategoryService = { getAllCategoryService,createCategoryService,updateCategoryService,deleteCategoryService };
+
+const CategoryService = { getAllCategoryService,createCategoryService,updateCategoryService,deleteCategoryService,detailCategoryService };
 
 export default CategoryService;

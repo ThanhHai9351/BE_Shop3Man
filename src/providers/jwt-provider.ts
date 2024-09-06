@@ -29,7 +29,7 @@ const generateToken = async (
 const verifyToken = async (
   token: string,
   secretSignature: string
-): Promise<JwtPayloadReturn | Error> => {
+): Promise<JwtPayloadReturn | null> => {
   try {
     const res = await JWT.verify(token, secretSignature) as JwtPayloadReturn ;
     const data = {
@@ -40,7 +40,7 @@ const verifyToken = async (
     }
     return data;
   } catch (error) {
-    return new Error(error instanceof Error ? error.message : String(error));
+   return null;
   }
 };
 

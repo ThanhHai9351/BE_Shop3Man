@@ -90,6 +90,48 @@ const getUserFromToken = (token:string) => {
     });
 };
 
-const UserService = { createUserService,loginService,getUserFromToken };
+const getAllUsers = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const allUser = await User.find({});
+
+      resolve({
+        status: "OK",
+        message: "Get all user successfully!",
+        data: allUser,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const updateUserService = (id:string,data:IUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkCategory = await User.findById(id);
+      if (!checkCategory) {
+        resolve({
+          status: 'Error',
+          message: 'User not found!',
+        });
+        return;
+      }
+      const updateCategory = await User.findByIdAndUpdate(id,data,{new:true});
+
+      resolve({
+        status: 'OK',
+        message: 'User update successfully!',
+        data: updateCategory,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+
+
+const UserService = { createUserService,loginService,getUserFromToken,getAllUsers,updateUserService };
 
 export default UserService;

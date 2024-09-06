@@ -1,6 +1,5 @@
 import {Request,Response,NextFunction} from 'express'
 import { JwtProvider } from '../providers/jwt-provider';
-import { JwtPayloadReturn } from '../providers/jwt-provider';
 
 const authenticationRoles = async (req: Request, res: Response, next: NextFunction)=> {
     try {
@@ -15,7 +14,7 @@ const authenticationRoles = async (req: Request, res: Response, next: NextFuncti
     const data : any  = await JwtProvider.verifyToken(token, process.env.ACCESS_TOKEN!)
     if(!data)
     {
-        return res.status(401).json({
+        return res.status(411).json({
             status: 'ERROR',
             message: 'User not found or token isvalid',
           });
@@ -36,6 +35,7 @@ const authenticationRoles = async (req: Request, res: Response, next: NextFuncti
       });
     }
   };
+
 
   const Authentication = {authenticationRoles}
 

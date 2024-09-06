@@ -6,7 +6,8 @@ export interface IUser extends Document {
     password: string;
     role: string;
     address?: string;  
-    dob?: Date;        
+    dob?: Date;  
+    avata?:string;      
 }
 
 const UserSchema: Schema<IUser> = new Schema(
@@ -16,7 +17,8 @@ const UserSchema: Schema<IUser> = new Schema(
         password: { type: String, required: true },
         role: { type: String, required: true },
         address: { type: String },
-        dob: { type: Date }
+        dob: { type: Date },
+        avata: {type: String}
     },
     {
         timestamps: true
