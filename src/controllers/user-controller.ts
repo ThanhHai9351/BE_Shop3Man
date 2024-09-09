@@ -11,6 +11,7 @@ const createUser = async (req: Request, res: Response): Promise<Response> => {
     address: Joi.string().optional(),
     dob: Joi.date().optional(),
     avata: Joi.string().optional(),
+    display_avata: Joi.string().optional()
   });
 
   try {
@@ -127,6 +128,24 @@ const updateUser = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-const UserController = { createUser, login, getUserFromToken, getAllUsers, updateUser };
+const deleteUser = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const id = req.params.id;
+    if(!id)
+    {
+      return res.status(404).json({status: "ERROR",message:"id not found!"})
+    }
+
+    const respon = await UserService.deleteUserService(id);
+    return res.status(200).json(respon);
+  } catch (err) {
+    return res.status(500).json({
+      status: "ERROR",
+      message: err instanceof Error ? err.message : "Unknown error occurred",
+    });
+  }
+};
+
+const UserController = { createUser, login, getUserFromToken, getAllUsers, updateUser,deleteUser };
 
 export default UserController;

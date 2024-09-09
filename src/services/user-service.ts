@@ -130,8 +130,32 @@ const updateUserService = (id:string,data:IUser) => {
   });
 };
 
+const deleteUserService = (id:string) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkCategory = await User.findById(id);
+      if (!checkCategory) {
+        resolve({
+          status: 'Error',
+          message: 'User not found!',
+        });
+        return;
+      }
+      const deleteUser = await User.findByIdAndDelete(id);
+
+      resolve({
+        status: 'OK',
+        message: 'User delete successfully!',
+        data: deleteUser,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
 
-const UserService = { createUserService,loginService,getUserFromToken,getAllUsers,updateUserService };
+
+const UserService = { createUserService,loginService,getUserFromToken,getAllUsers,updateUserService,deleteUserService };
 
 export default UserService;
