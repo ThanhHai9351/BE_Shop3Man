@@ -10,7 +10,7 @@ interface IColor {
     size: ISize[];
 }
 
-interface IProduct extends Document {
+export interface IProduct extends Document {
     name: string;
     price: number;
     imageMain?: string;
