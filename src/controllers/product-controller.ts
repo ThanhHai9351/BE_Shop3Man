@@ -162,6 +162,20 @@ const detailProduct = async (
   }
 };
 
+const getAllProduct = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const respon = await ProductService.getAllPRoductService();
+    return res.status(200).json(respon);
+  } catch (err) {
+    return res.status(500).json({
+      status: "ERROR",
+      message: err instanceof Error ? err.message : "Unknown error occurred",
+    });
+  }
+};
 
 const deleteProduct = async (
     req: Request,
@@ -185,6 +199,6 @@ const deleteProduct = async (
       });
     }
   };
-const ProductController = { createProduct, updateProduct, detailProduct,deleteProduct };
+const ProductController = { createProduct, updateProduct, detailProduct,deleteProduct,getAllProduct };
 
 export default ProductController;

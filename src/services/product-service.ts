@@ -87,11 +87,27 @@ const deleteProductService = (id: string) => {
   });
 };
 
+const getAllPRoductService = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const getAllProducts = await Product.find();
+      resolve({
+        status: "OK",
+        message: "product detail successfully!",
+        data: getAllProducts,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const ProductService = {
   createProductService,
   updateProductService,
   detailProductService,
   deleteProductService,
+  getAllPRoductService
 };
 
 export default ProductService;
