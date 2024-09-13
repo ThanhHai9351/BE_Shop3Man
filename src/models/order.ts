@@ -15,7 +15,7 @@ interface IAddress{
     street: String;
 }
 
-interface IOrder extends Document {
+export interface IOrder extends Document {
     userid: mongoose.Schema.Types.ObjectId;
     username: String;
     items:ItemCart[];
