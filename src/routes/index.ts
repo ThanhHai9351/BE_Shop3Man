@@ -6,6 +6,8 @@ import MailerRouter from './mailer-router'
 import ProductRouter from './product-router'
 import CartRouter from './cart-router'
 import OrderRouter from './order-router'
+import MomoRouter from './MoMoRouter'
+import VnPayRouter from './PaymentRouter'
 
 const routes = (app: Application): void => {
   app.use("/api/user", UserRouter);
@@ -15,6 +17,8 @@ const routes = (app: Application): void => {
   app.use("/api/mail",MailerRouter);
   app.use("/api/cart",CartRouter);
   app.use("/api/order",OrderRouter);
+  app.use("/api/momo",MomoRouter);
+  app.use("/api/vnpay",VnPayRouter);
 };
 
 export default routes;
