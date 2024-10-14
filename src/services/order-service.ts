@@ -16,15 +16,22 @@ const createOrderService = (data: IOrder) => {
   });
 };
 
-const getAllOrderService = () => {
+const getAllOrderService = (limit:number, page:number) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const allOrders = await Order.find({});
-      resolve({
-        status: "OK",
-        message: "Get all order complete!",
-        data: allOrders,
-      });
+      
+        const totalOrders = await Order.countDocuments();
+        const allOrders = await Order.find()
+          .limit(limit)
+          .skip(limit * page);
+        resolve({
+          status: "OK",
+          message: "GET ALL ORDER COMPLETE!",
+          data: allOrders,
+          total: totalOrders,
+          pageCurrent: Number(page + 1),
+          totalPage: Math.ceil(totalOrders / limit),
+        })
     } catch (e) {
       reject(e);
     }

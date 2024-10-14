@@ -1,13 +1,25 @@
 import Category, { ICategory } from '../models/category';
 
-const getAllCategoryService = ()  => {
+const getAllCategoryService = (limit:number, page:number, filter: string)  => {
   return new Promise(async (resolve, reject) => {
     try {
-      const allCategory = await Category.find({});
+      let query = {};
+    if (filter && filter !== "") {
+        query = {
+          name: { $regex: filter, $options: 'i' }, 
+        };
+      }
+      const totalCategory = await Category.countDocuments(query);
+      const allCategory = await Category.find(query)
+        .limit(limit)
+        .skip(limit * page);
       resolve({
-        status: 'OK',
-        message: 'Get alll category complete!',
+        status: "OK",
+        message: "GET ALL Category COMPLETE!",
         data: allCategory,
+        total: totalCategory,
+        pageCurrent: Number(page + 1),
+        totalPage: Math.ceil(totalCategory / limit),
       });
     } catch (e) {
       reject(e);

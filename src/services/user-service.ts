@@ -90,16 +90,27 @@ const getUserFromToken = (token:string) => {
     });
 };
 
-const getAllUsers = () => {
+const getAllUsers = (limit:number, page:number, filter: string) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const allUser = await User.find({});
-
-      resolve({
-        status: "OK",
-        message: "Get all user successfully!",
-        data: allUser,
-      });
+      let query = {};
+      if (filter && filter !== "") {
+          query = {
+            name: { $regex: filter, $options: 'i' }, 
+          };
+        }
+        const totalUsers = await User.countDocuments(query);
+        const allUsers = await User.find(query)
+          .limit(limit)
+          .skip(limit * page);
+        resolve({
+          status: "OK",
+          message: "GET ALL USERS COMPLETE!",
+          data: allUsers,
+          total: totalUsers,
+          pageCurrent: Number(page + 1),
+          totalPage: Math.ceil(totalUsers / limit),
+        });
     } catch (e) {
       reject(e);
     }

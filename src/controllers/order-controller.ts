@@ -51,7 +51,11 @@ const createOrder = async (req: Request, res: Response): Promise<Response> => {
 
 const getAllOrder = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const respon = await OrderService.getAllOrderService();
+    const { limit, page} = req.query;
+    const respon = await OrderService.getAllOrderService(
+      Number(limit) || 5,
+      Number(page) || 0,
+    );
     return res.status(200).json(respon);
   } catch (error) {
     return res.status(404).json({ error });

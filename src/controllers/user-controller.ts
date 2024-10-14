@@ -85,7 +85,12 @@ const getUserFromToken = async (
 
 const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const respon = await UserService.getAllUsers();
+    const { limit, page, filter} = req.query;
+    const respon = await UserService.getAllUsers(
+      Number(limit) || 5,
+      Number(page) || 0,
+      filter as string || ""
+    );
     return res.status(200).json(respon);
   } catch (error) {
     return res.status(404).json({ error });

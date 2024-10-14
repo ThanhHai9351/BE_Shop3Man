@@ -167,7 +167,12 @@ const getAllProduct = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const respon = await ProductService.getAllPRoductService();
+    const { limit, page, filter} = req.query;
+    const respon = await ProductService.getAllProductService(
+      Number(limit) || 5,
+      Number(page) || 0,
+     filter as string || ""
+    );
     return res.status(200).json(respon);
   } catch (err) {
     return res.status(500).json({

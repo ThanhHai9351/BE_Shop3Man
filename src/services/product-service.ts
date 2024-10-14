@@ -1,5 +1,5 @@
+import { isNil } from "lodash";
 import Product, { IProduct } from "../models/product";
-
 const createProductService = (data: IProduct) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -87,27 +87,42 @@ const deleteProductService = (id: string) => {
   });
 };
 
-const getAllPRoductService = () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const getAllProducts = await Product.find();
-      resolve({
-        status: "OK",
-        message: "product detail successfully!",
-        data: getAllProducts,
-      });
-    } catch (e) {
-      reject(e);
+const getAllProductService = async (limit: number, page: number, filter: string) => {
+  try {
+    let query = {}
+    if (filter && filter !== "") {
+      query = {
+        name: { $regex: filter, $options: 'i' }, 
+      };
     }
-  });
+    console.log(filter)
+
+    console.log(query)
+    const totalProduct = await Product.countDocuments(query);
+    const allProduct = await Product.find(query)
+      .limit(limit)
+      .skip(limit * page);
+
+    return {
+      status: "OK",
+      message: "GET ALL PRODUCTS COMPLETE!",
+      data: allProduct,
+      total: totalProduct,
+      pageCurrent: page + 1,
+      totalPage: Math.ceil(totalProduct / limit),
+    };
+  } catch (e) {
+    throw e;
+  }
 };
+
 
 const ProductService = {
   createProductService,
   updateProductService,
   detailProductService,
   deleteProductService,
-  getAllPRoductService
+  getAllProductService
 };
 
 export default ProductService;
