@@ -9,6 +9,7 @@ const createProduct = async (
   const schema = Joi.object({
     name: Joi.string().required(),
     price: Joi.number().required(),
+    slug: Joi.string().required(),
     imageMain: Joi.string().optional(),
     image: Joi.array().items(Joi.string()).optional(),
     description: Joi.string().optional(),
@@ -16,21 +17,6 @@ const createProduct = async (
       .pattern(new RegExp("^[0-9a-fA-F]{24}$"))
       .required(),
     quantity: Joi.number().required(),
-    color: Joi.array()
-      .items(
-        Joi.object({
-          name: Joi.string().required(),
-          size: Joi.array()
-            .items(
-              Joi.object({
-                numberSize: Joi.number().required(),
-                quantity: Joi.number().required(),
-              })
-            )
-            .required(),
-        })
-      )
-      .optional(),
     size: Joi.array()
       .items(
         Joi.object({

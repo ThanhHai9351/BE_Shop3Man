@@ -7,7 +7,6 @@ import querystring from "qs";
 
 const router = express.Router();
 
-// Types for environment variables or config values
 interface Config {
   vnp_TmnCode: string;
   vnp_HashSecret: string;

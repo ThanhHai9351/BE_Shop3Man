@@ -22,7 +22,10 @@ app.get("/api/status", (req: Request, res: Response) => {
   return res.send("Port is active!");
 });
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',  // Allow frontend origin
+  credentials: true,                // Allow cookies to be sent
+}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 routes(app);

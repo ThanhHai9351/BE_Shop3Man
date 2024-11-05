@@ -50,7 +50,7 @@ const login = async (req: Request, res: Response): Promise<Response> => {
       });
     }
 
-    const respon = await UserService.loginService(value.email, value.password);
+    const respon = await UserService.loginService(value.email, value.password, res);
     return res.status(200).json(respon);
   } catch (err) {
     return res.status(500).json({
@@ -99,10 +99,10 @@ const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
 
 const updateUser = async (req: Request, res: Response): Promise<Response> => {
   const schema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-    role: Joi.string().required(),
+    name: Joi.string().optional(),
+    email: Joi.string().email().optional(),
+    password: Joi.string().optional(),
+    role: Joi.string().optional(),
     address: Joi.string().optional(),
     dob: Joi.date().optional(),
     avata: Joi.string().optional(),

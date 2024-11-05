@@ -6,7 +6,7 @@ const getAllCategories = async (req: Request, res: Response): Promise<Response> 
   try {
     const { limit, page, filter} = req.query;
     const respon = await CategoryService.getAllCategoryService(
-      Number(limit) || 5,
+      Number(limit) || 6,
       Number(page) || 0,
       filter as string || ""
     );
@@ -19,6 +19,7 @@ const getAllCategories = async (req: Request, res: Response): Promise<Response> 
 const createCategory = async (req: Request, res: Response): Promise<Response> => {
   const schema = Joi.object({
     name: Joi.string().required(),
+    image: Joi.string().required()
   });
 
   try {
