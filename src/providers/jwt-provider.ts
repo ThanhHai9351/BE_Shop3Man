@@ -1,50 +1,47 @@
-import JWT, { SignOptions } from 'jsonwebtoken';
+import JWT, { SignOptions } from "jsonwebtoken"
 interface JwtPayload {
-  [key: string]: any;
+  [key: string]: any
 }
 
 export interface JwtPayloadReturn {
-  _id: string;
-  name:string;
-  email:string;
-  role:string;
+  _id: string
+  name: string
+  email: string
+  role: string
 }
 
 const generateToken = async (
   payload: JwtPayload,
   secretSignature: string,
-  tokenLife: string | number
+  tokenLife: string | number,
 ): Promise<string | Error> => {
   try {
     const options: SignOptions = {
       algorithm: "HS256",
       expiresIn: tokenLife,
-    };
-    return JWT.sign(payload, secretSignature, options);
+    }
+    return JWT.sign(payload, secretSignature, options)
   } catch (error) {
-    return new Error(error instanceof Error ? error.message : String(error));
+    return new Error(error instanceof Error ? error.message : String(error))
   }
-};
+}
 
-const verifyToken = async (
-  token: string,
-  secretSignature: string
-): Promise<JwtPayloadReturn | null> => {
+const verifyToken = async (token: string, secretSignature: string): Promise<JwtPayloadReturn | null> => {
   try {
-    const res = await JWT.verify(token, secretSignature) as JwtPayloadReturn ;
+    const res = (await JWT.verify(token, secretSignature)) as JwtPayloadReturn
     const data = {
       _id: res._id,
       name: res.name,
       email: res.email,
-      role: res.role
+      role: res.role,
     }
-    return data;
+    return data
   } catch (error) {
-   return null;
+    return null
   }
-};
+}
 
 export const JwtProvider = {
   generateToken,
   verifyToken,
-};
+}

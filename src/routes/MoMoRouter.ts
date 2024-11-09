@@ -1,10 +1,10 @@
-import express, { Router,Request,Response } from "express";
-import axios from "axios";
-import crypto from 'crypto'
-const router: Router = express.Router();
-import config from './config'
+import express, { Router, Request, Response } from "express"
+import axios from "axios"
+import crypto from "crypto"
+const router: Router = express.Router()
+import config from "./config"
 
-router.post("/payment", async (req:Request, res:Response) => {
+router.post("/payment", async (req: Request, res: Response) => {
   let {
     accessKey,
     secretKey,
@@ -17,12 +17,12 @@ router.post("/payment", async (req:Request, res:Response) => {
     orderGroupId,
     autoCapture,
     lang,
-  } = config;
+  } = config
 
-  const { money } = req.body;
-  var amount = money;
-  var orderId = partnerCode + new Date().getTime();
-  var requestId = orderId;
+  const { money } = req.body
+  var amount = money
+  var orderId = partnerCode + new Date().getTime()
+  var requestId = orderId
 
   //before sign HMAC SHA256 with format
   //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
@@ -46,13 +46,10 @@ router.post("/payment", async (req:Request, res:Response) => {
     "&requestId=" +
     requestId +
     "&requestType=" +
-    requestType;
+    requestType
 
   //signature
-  var signature = crypto
-    .createHmac("sha256", secretKey)
-    .update(rawSignature)
-    .digest("hex");
+  var signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex")
 
   //json object send to MoMo endpoint
   const requestBody = JSON.stringify({
@@ -71,7 +68,7 @@ router.post("/payment", async (req:Request, res:Response) => {
     extraData: extraData,
     orderGroupId: orderGroupId,
     signature: signature,
-  });
+  })
 
   // options for axios
   const options = {
@@ -82,17 +79,17 @@ router.post("/payment", async (req:Request, res:Response) => {
       "Content-Length": Buffer.byteLength(requestBody),
     },
     data: requestBody,
-  };
+  }
 
   // Send the request and handle the response
-  let result;
+  let result
   try {
-    result = await axios(options);
-    return res.status(200).json(result.data);
+    result = await axios(options)
+    return res.status(200).json(result.data)
   } catch (error) {
-    return res.status(500).json({ statusCode: 500, message: error });
+    return res.status(500).json({ statusCode: 500, message: error })
   }
-});
+})
 
 router.post("/callback", async (req, res) => {
   /**
@@ -100,8 +97,8 @@ router.post("/callback", async (req, res) => {
     resultCode = 9000: giao dịch được cấp quyền (authorization) thành công .
     resultCode <> 0: giao dịch thất bại.
    */
-  console.log("callback: ");
-  console.log(req.body);
+  console.log("callback: ")
+  console.log(req.body)
   /**
    * Dựa vào kết quả này để update trạng thái đơn hàng
    * Kết quả log:
@@ -122,22 +119,19 @@ router.post("/callback", async (req, res) => {
       }
    */
 
-  return res.status(204).json(req.body);
-});
+  return res.status(204).json(req.body)
+})
 
 router.post("/check-status-transaction", async (req, res) => {
-  const { orderId } = req.body;
+  const { orderId } = req.body
 
   // const signature = accessKey=$accessKey&orderId=$orderId&partnerCode=$partnerCode
   // &requestId=$requestId
-  var secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
-  var accessKey = "F8BBA842ECF85";
-  const rawSignature = `accessKey=${accessKey}&orderId=${orderId}&partnerCode=MOMO&requestId=${orderId}`;
+  var secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
+  var accessKey = "F8BBA842ECF85"
+  const rawSignature = `accessKey=${accessKey}&orderId=${orderId}&partnerCode=MOMO&requestId=${orderId}`
 
-  const signature = crypto
-    .createHmac("sha256", secretKey)
-    .update(rawSignature)
-    .digest("hex");
+  const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex")
 
   const requestBody = JSON.stringify({
     partnerCode: "MOMO",
@@ -145,7 +139,7 @@ router.post("/check-status-transaction", async (req, res) => {
     orderId: orderId,
     signature: signature,
     lang: "vi",
-  });
+  })
 
   // options for axios
   const options = {
@@ -155,11 +149,11 @@ router.post("/check-status-transaction", async (req, res) => {
       "Content-Type": "application/json",
     },
     data: requestBody,
-  };
+  }
 
-  const result = await axios(options);
+  const result = await axios(options)
 
-  return res.status(200).json(result.data);
-});
+  return res.status(200).json(result.data)
+})
 
-export default router;
+export default router

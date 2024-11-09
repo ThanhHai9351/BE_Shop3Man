@@ -10,6 +10,6 @@ const config = {
   orderGroupId: "",
   autoCapture: true,
   lang: "vi",
-};
+}
 
 export default config
