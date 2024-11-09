@@ -1,31 +1,31 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose"
 
 interface ISize {
-  numberSize: number;
-  quantity: number;
+  numberSize: number
+  quantity: number
 }
 
 interface IColor {
-  name: string;
-  size: ISize[];
+  name: string
+  size: ISize[]
 }
 
 export interface IProduct extends Document {
-  name: string;
-  price: number;
-  slug: String;
-  imageMain?: string;
-  image?: string[];
-  description?: string;
-  categoryid: mongoose.Schema.Types.ObjectId;
-  quantity: number;
+  name: string
+  price: number
+  slug: String
+  imageMain?: string
+  image?: string[]
+  description?: string
+  categoryid: mongoose.Schema.Types.ObjectId
+  quantity: number
   size?: {
-    numberSize: number;
+    numberSize: number
     color: {
-      name: string;
-      quantity: number;
-    }[];
-  }[];
+      name: string
+      quantity: number
+    }[]
+  }[]
 }
 
 const ProductSchema: Schema<IProduct> = new Schema(
@@ -56,12 +56,9 @@ const ProductSchema: Schema<IProduct> = new Schema(
   },
   {
     timestamps: true,
-  }
-);
+  },
+)
 
-const Product: Model<IProduct> = mongoose.model<IProduct>(
-  "Product",
-  ProductSchema
-);
+const Product: Model<IProduct> = mongoose.model<IProduct>("Product", ProductSchema)
 
-export default Product;
+export default Product
