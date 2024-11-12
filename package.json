@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-     "prettier": "prettier --check \"src/**/(*.tsx|*.ts)\"",
+    "prettier": "prettier --check \"src/**/(*.tsx|*.ts)\"",
     "prettier:fix": "prettier --write \"src/**/(*.tsx|*.ts)\""
   },
   "author": "ThanhHai",
@@ -47,6 +47,7 @@
     "qs": "^6.13.0",
     "redis": "^4.7.0",
     "request": "^2.88.2",
+    "socket.io": "^4.8.1",
     "typescript": "^5.5.4"
   }
 }
