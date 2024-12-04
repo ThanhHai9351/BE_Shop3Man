@@ -1,6 +1,6 @@
 import express, { Router } from "express"
 import multer from "multer"
-import ImageController from "../controllers/image-controller"
+import ImageController from "../controllers/image.controller"
 import Authentication from "../middleware/authentication"
 
 const router: Router = express.Router()

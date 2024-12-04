@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import CategoryService from "../services/category-service"
+import CategoryService from "../services/category.service"
 import Joi from "joi"
 
 const getAllCategories = async (req: Request, res: Response): Promise<Response> => {

@@ -1,5 +1,5 @@
 import { Response } from "express"
-import User, { IUser } from "../models/user"
+import User, { IUser } from "../models/user.model"
 import { JwtProvider } from "../providers/jwt-provider"
 import { createClient } from "redis"
 import bcrypt from "bcrypt"

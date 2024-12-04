@@ -1,13 +1,13 @@
 import { Application } from "express"
-import UserRouter from "./user-router"
-import CategoryRouter from "./category-router"
-import ImageRouter from "./image-router"
-import MailerRouter from "./mailer-router"
-import ProductRouter from "./product-router"
-import CartRouter from "./cart-router"
-import OrderRouter from "./order-router"
-import MomoRouter from "./MoMoRouter"
-import VnPayRouter from "./PaymentRouter"
+import UserRouter from "./user.routes"
+import CategoryRouter from "./category.routes"
+import ImageRouter from "./image.routes"
+import MailerRouter from "./mailer.routes"
+import ProductRouter from "./product.routes"
+import CartRouter from "./cart.routes"
+import OrderRouter from "./order.routes"
+import MomoRouter from "./momo.routes"
+import VnPayRouter from "./payment.routes"
 
 const routes = (app: Application): void => {
   app.use("/api/user", UserRouter)

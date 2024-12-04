@@ -97,36 +97,36 @@ function sortObject(obj: Record<string, any>): Record<string, any> {
   return sorted
 }
 
-// router.get("/vnpay_return", (req: Request, res: Response) => {
-//   let vnp_Params = req.query;
-//   const secureHash = vnp_Params["vnp_SecureHash"] as string;
+router.get("/vnpay_return", (req: Request, res: Response) => {
+  let vnp_Params = req.query;
+  const secureHash = vnp_Params["vnp_SecureHash"] as string;
 
-//   delete vnp_Params["vnp_SecureHash"];
-//   delete vnp_Params["vnp_SecureHashType"];
+  delete vnp_Params["vnp_SecureHash"];
+  delete vnp_Params["vnp_SecureHashType"];
 
-//   vnp_Params = sortObject(vnp_Params);
+  vnp_Params = sortObject(vnp_Params);
 
-//   const tmnCode = config.get<string>("vnp_TmnCode");
-//   const secretKey = config.get<string>("vnp_HashSecret");
+  const tmnCode = config.get<string>("vnp_TmnCode");
+  const secretKey = config.get<string>("vnp_HashSecret");
 
-//   const signData = querystring.stringify(vnp_Params, { encode: false });
-//   const hmac = crypto.createHmac("sha512", secretKey);
-//   const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+  const signData = querystring.stringify(vnp_Params, { encode: false });
+  const hmac = crypto.createHmac("sha512", secretKey);
+  const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
 
-//   if (secureHash === signed) {
-//     const orderId = req.query.vnp_TxnRef as string;
-//     con.connect((err) => {
-//       if (err) throw err;
-//       const sql = "UPDATE `order` SET state = ? WHERE order_id = ?";
-//       con.query(sql, ["banked", orderId.toString()]);
-//       con.end();
-//     });
+  // if (secureHash === signed) {
+  //   const orderId = req.query.vnp_TxnRef as string;
+  //   con.connect((err) => {
+  //     if (err) throw err;
+  //     const sql = "UPDATE `order` SET state = ? WHERE order_id = ?";
+  //     con.query(sql, ["banked", orderId.toString()]);
+  //     con.end();
+  //   });
 
-//     res.render("success", { code: vnp_Params["vnp_ResponseCode"] });
-//   } else {
-//     res.render("success", { code: "97" });
-//   }
-// });
+  //   res.render("success", { code: vnp_Params["vnp_ResponseCode"] });
+  // } else {
+  //   res.render("success", { code: "97" });
+  // }
+});
 
 router.get("/vnpay_ipn", (req: Request, res: Response) => {
   let vnp_Params = req.query

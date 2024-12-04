@@ -1,4 +1,4 @@
-import ProductService from "../services/product-service"
+import ProductService from "../services/product.service"
 import Joi from "joi"
 import { Request, Response } from "express"
 

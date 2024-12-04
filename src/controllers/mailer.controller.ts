@@ -1,6 +1,6 @@
 import Joi from "joi"
 import { Request, Response } from "express"
-import MailerServices from "../services/mailer-service"
+import MailerServices from "../services/mailer.service"
 
 const sendMail = async (req: Request, res: Response): Promise<Response> => {
   const schema = Joi.object({
