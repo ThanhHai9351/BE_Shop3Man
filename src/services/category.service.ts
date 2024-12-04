@@ -1,4 +1,4 @@
-import Category, { ICategory } from "../models/category"
+import Category, { ICategory } from "../models/category.model"
 import { createClient } from "redis"
 
 const redisClient = createClient()

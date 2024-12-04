@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import ImageService from "../services/image-service"
+import ImageService from "../services/image.service"
 const uploadImage = async (req: Request, res: Response): Promise<Response> => {
   try {
     if (!req.file) {

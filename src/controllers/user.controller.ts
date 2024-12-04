@@ -1,5 +1,5 @@
 import Joi from "joi"
-import UserService from "../services/user-service"
+import UserService from "../services/user.service"
 import { Request, Response } from "express"
 
 const createUser = async (req: Request, res: Response): Promise<Response> => {

@@ -1,5 +1,5 @@
 import express, { Request, Response, Router } from "express"
-import CategoryController from "../controllers/category-controller"
+import CategoryController from "../controllers/category.controller"
 import Authentication from "../middleware/authentication"
 const router: Router = express.Router()
 

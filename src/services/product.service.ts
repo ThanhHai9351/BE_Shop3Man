@@ -1,5 +1,5 @@
 import { isNil } from "lodash"
-import Product, { IProduct } from "../models/product"
+import Product, { IProduct } from "../models/product.model"
 import { createClient } from "redis"
 
 const redisClient = createClient()

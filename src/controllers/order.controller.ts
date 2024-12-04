@@ -1,6 +1,6 @@
 import Joi from "joi"
 import { Request, Response } from "express"
-import OrderService from "../services/order-service"
+import OrderService from "../services/order.service"
 
 const createOrder = async (req: Request, res: Response): Promise<Response> => {
   const schema = Joi.object({

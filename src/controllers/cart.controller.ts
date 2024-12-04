@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import Joi from "joi"
-import CartService from "../services/cart-service"
+import CartService from "../services/cart.service"
 
 const createCart = async (req: Request, res: Response): Promise<Response> => {
   const schema = Joi.object({
