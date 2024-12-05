@@ -1,61 +1,91 @@
-import mongoose, { Schema, Document, Model } from "mongoose"
+import mongoose, { Schema, Document, Model } from "mongoose";
+
 interface ItemCart {
-  productid: mongoose.Schema.Types.ObjectId
-  name: String
-  price: Number
-  quantity: Number
-  totalMoney: Number
-  size: Number
-  color: String
+  productId: mongoose.Types.ObjectId;
+  color: string;
+  size: number;
+  quantity: number;
+  price: number;
+  totalPrice: number;
 }
 
+
 interface IAddress {
-  city: String
-  district: String
-  street: String
+  city: string; 
+  district: string;
+  street: string;
+}
+
+export enum EStatus {
+  PEDDING = "Pedding",
+  PROCCESS = "Process",
+  SUCCESS = "Success",
+}
+
+export enum EPayment {
+  CASH = "Cash",
+  VNPAY = "VNPay",
+  MOMO = "MoMo",
 }
 
 export interface IOrder extends Document {
-  userid: mongoose.Schema.Types.ObjectId
-  username: String
-  items: ItemCart[]
-  totalPrice: Number
-  address: IAddress
-  paymentMethod: String
-  paidAt: Date
-  status: String
+  userId: mongoose.Types.ObjectId;
+  items: ItemCart[];
+  quantity_item: number;
+  totalMoney: number; 
+  address: IAddress;
+  paymentMethod: EPayment;
+  status: EStatus;
+  paidAt: Date;
 }
 
-const orderScheme: Schema<IOrder> = new Schema(
+const itemCartSchema: Schema<ItemCart> = new Schema(
   {
-    userid: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
-    username: { type: String, required: true },
-    items: [
-      {
-        productid: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Product" },
-        name: { type: String, required: true },
-        price: { type: Number, required: true },
-        quantity: { type: Number, required: true },
-        totalMoney: { type: Number, required: true },
-        size: { type: Number, required: true },
-        color: { type: String, required: true },
-      },
-    ],
+    productId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Product" },
+    color: { type: String, required: true },
+    size: { type: Number, required: true },
+    quantity: { type: Number, required: true },
+    price: { type: Number, required: true },
     totalPrice: { type: Number, required: true },
-    address: {
-      city: { type: String, required: true },
-      dictrict: { type: String, required: true },
-      street: { type: String, required: true },
+  },
+  { _id: false } 
+);
+
+
+const addressSchema: Schema<IAddress> = new Schema(
+  {
+    city: { type: String, required: true },
+    district: { type: String, required: true },
+    street: { type: String, required: true },
+  },
+  { _id: false } 
+);
+
+
+const orderSchema: Schema<IOrder> = new Schema(
+  {
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+    items: { type: [itemCartSchema], required: true }, 
+    quantity_item: { type: Number, required: true },
+    totalMoney: { type: Number, required: true },
+    address: { type: addressSchema, required: true }, 
+    paymentMethod: {
+      type: String,
+      enum: Object.values(EPayment), 
+      required: true,
     },
-    paymentMethod: { type: String, required: true },
-    paidAt: { type: Date, required: true },
-    status: {type: String, require: true},
+    status: {
+      type: String,
+      enum: Object.values(EStatus), 
+      default: EStatus.PEDDING, 
+    },
+    paidAt: { type: Date, required: false },
   },
   {
-    timestamps: true,
-  },
-)
+    timestamps: true, 
+  }
+);
 
-const Order: Model<IOrder> = mongoose.model<IOrder>("Order", orderScheme)
+const Order: Model<IOrder> = mongoose.model<IOrder>("Order", orderSchema);
 
-export default Order
+export default Order;

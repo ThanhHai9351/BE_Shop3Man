@@ -1,30 +1,13 @@
-import mongoose, { Schema, Document, Model } from "mongoose"
+import mongoose, { Schema, Model } from "mongoose"
 
-interface ISize {
-  numberSize: number
-  quantity: number
-}
 
-interface IColor {
-  name: string
-  size: ISize[]
-}
-
-export interface IProduct extends Document {
+export interface IProduct {
   name: string
   price: number
   slug: String
-  image?: string[]
+  imageUrl?: string
   description?: string
-  categoryid: mongoose.Schema.Types.ObjectId
-  quantity: number
-  size?: {
-    numberSize: number
-    color: {
-      name: string
-      quantity: number
-    }[]
-  }[]
+  categoryId: mongoose.Schema.Types.ObjectId
 }
 
 const ProductSchema: Schema<IProduct> = new Schema(
@@ -32,25 +15,13 @@ const ProductSchema: Schema<IProduct> = new Schema(
     name: { type: String, required: true },
     price: { type: Number, required: true },
     slug: { type: String, required: true },
-    image: [{ type: String }],
+    imageUrl: { type: String },
     description: { type: String },
-    categoryid: {
+    categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "Category",
     },
-    quantity: { type: Number, required: true },
-    size: [
-      {
-        numberSize: { type: Number, required: true },
-        color: [
-          {
-            name: { type: String, required: true },
-            quantity: { type: Number, required: true },
-          },
-        ],
-      },
-    ],
   },
   {
     timestamps: true,

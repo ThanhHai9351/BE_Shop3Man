@@ -21,11 +21,10 @@ const createUserService = (data: IUser) => {
 
       const passwordNew = await bcrypt.hash(data.password, 10)
       const userNew = {
-        name: data.name,
+        firstName: data.firstName,
         email: data.email,
         role: data.role,
         password: passwordNew,
-        address: data.address,
         dob: data.dob,
       }
       const createUser = await User.create(userNew)
@@ -62,7 +61,7 @@ const loginService = (email: string, password: string, res: Response) => {
         return
       }
 
-      const data = { _id: checkUser._id, email: checkUser.email, name: checkUser.name, role: checkUser.role }
+      const data = { _id: checkUser._id, email: checkUser.email, name: checkUser.firstName, role: checkUser.role }
 
       const accessToken = await JwtProvider.generateToken(data, process.env.ACCESS_TOKEN!, "24h")
       const refreshToken = await JwtProvider.generateToken(data, process.env.REFRESH_TOKEN!, "30 days")

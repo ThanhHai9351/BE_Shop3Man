@@ -1,20 +1,37 @@
-import mongoose, { Schema, Document, Model } from "mongoose"
+import mongoose, { Schema, Document, Model } from "mongoose";
+
+export enum NotificationType {
+  COMMENT = "info",
+  GLOBAL = "global",
+}
+
 
 export interface INotification extends Document {
-  user: mongoose.Schema.Types.ObjectId
-  message: String
+  userId: mongoose.Types.ObjectId; 
+  message: string; 
+  type: NotificationType; 
 }
+
 
 const notificationSchema: Schema<INotification> = new Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
-    message: { type: String, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+    message: { type: String, required: true }, 
+    type: {
+      type: String,
+      enum: Object.values(NotificationType), 
+      default: NotificationType.GLOBAL, 
+      required: true,
+    },
   },
   {
-    timestamps: true,
-  },
-)
+    timestamps: true, 
+  }
+);
 
-const Notification: Model<INotification> = mongoose.model<INotification>("Notification", notificationSchema)
+const Notification: Model<INotification> = mongoose.model<INotification>(
+  "Notification",
+  notificationSchema
+);
 
-export default Notification
+export default Notification;

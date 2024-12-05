@@ -1,24 +1,25 @@
-import mongoose, { Schema, Document, Model } from "mongoose"
+import mongoose, { Schema, Document, Model } from "mongoose";
+
 
 export interface IChat extends Document {
-  senderId: mongoose.Schema.Types.ObjectId
-  receiverId: mongoose.Schema.Types.ObjectId
-  message: String
-  isSend: boolean
+  userId: mongoose.Types.ObjectId; 
+  userReceiveId: mongoose.Types.ObjectId; 
+  message: string;
+  isSend: boolean; 
 }
 
 const chatSchema: Schema<IChat> = new Schema(
   {
-    senderId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
-    receiverId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+    userReceiveId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
     message: { type: String, required: true },
-    isSend: { type: Boolean, required: true },
+    isSend: { type: Boolean, default: false, required: true }, 
   },
   {
-    timestamps: true,
-  },
-)
+    timestamps: true, 
+  }
+);
 
-const Chat : Model<IChat> = mongoose.model<IChat>("Chat ", chatSchema)
+const Chat: Model<IChat> = mongoose.model<IChat>("Chat", chatSchema);
 
-export default Chat 
+export default Chat;

@@ -27,3 +27,5 @@ yarn-error.log*
 /config
 
 .config.ts
+
+src/routes/config.ts

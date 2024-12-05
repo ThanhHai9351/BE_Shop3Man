@@ -1,18 +1,34 @@
 import mongoose, { Schema, Document, Model } from "mongoose"
 
 export interface ICart extends Document {
-  userid: mongoose.Schema.Types.ObjectId
-  productid: mongoose.Schema.Types.ObjectId
-  quantity: Number
-  productname: String
+  userId: mongoose.Schema.Types.ObjectId
+  items: ICartItem[]
+  totalMoney: number
+}
+
+export interface ICartItem {
+  productId: mongoose.Schema.Types.ObjectId
+  color: string
+  size: number
+  quantity: number
+  price: number
+  totalPrice: number
 }
 
 const cartSchema: Schema<ICart> = new Schema(
   {
-    userid: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
-    productid: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Product" },
-    quantity: { type: Number, required: true },
-    productname: { type: String, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+    items:[
+      {
+        productId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Product" },
+        color: { type: String, required: true },
+        size: { type: String, required: true }, 
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
+        totalPrice: { type: Number, required: true },
+      }
+    ],
+    totalMoney: { type: Number, required: true },
   },
   {
     timestamps: true,

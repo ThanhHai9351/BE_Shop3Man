@@ -1,14 +1,18 @@
 import mongoose, { Schema, Document, Model } from "mongoose"
 
 export interface ICategory extends Document {
-  name: mongoose.Schema.Types.String
-  image: mongoose.Schema.Types.String
+  name: String
+  imageUrl: String
+  decription: String
+  slug: String
 }
 
 const categorySchema: Schema<ICategory> = new Schema(
   {
     name: { type: String, required: true },
-    image: { type: String, required: false },
+    imageUrl: { type: String, required: false },
+    decription: {type:String, required: false},
+    slug: {type: String, required: true}
   },
   {
     timestamps: true,
