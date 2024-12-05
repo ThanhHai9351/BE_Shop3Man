@@ -14,7 +14,6 @@ export interface IProduct extends Document {
   name: string
   price: number
   slug: String
-  imageMain?: string
   image?: string[]
   description?: string
   categoryid: mongoose.Schema.Types.ObjectId
@@ -33,7 +32,6 @@ const ProductSchema: Schema<IProduct> = new Schema(
     name: { type: String, required: true },
     price: { type: Number, required: true },
     slug: { type: String, required: true },
-    imageMain: { type: String },
     image: [{ type: String }],
     description: { type: String },
     categoryid: {

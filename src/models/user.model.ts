@@ -11,6 +11,7 @@ export interface IUser extends Document {
   display_avatar?: string
 }
 
+
 const UserSchema: Schema<IUser> = new Schema(
   {
     name: { type: String, required: true },

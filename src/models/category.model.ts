@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose"
 
 export interface ICategory extends Document {
-  name: mongoose.Schema.Types.ObjectId
+  name: mongoose.Schema.Types.String
   image: mongoose.Schema.Types.String
 }
 

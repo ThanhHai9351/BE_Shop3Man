@@ -23,6 +23,7 @@ export interface IOrder extends Document {
   address: IAddress
   paymentMethod: String
   paidAt: Date
+  status: String
 }
 
 const orderScheme: Schema<IOrder> = new Schema(
@@ -48,6 +49,7 @@ const orderScheme: Schema<IOrder> = new Schema(
     },
     paymentMethod: { type: String, required: true },
     paidAt: { type: Date, required: true },
+    status: {type: String, require: true},
   },
   {
     timestamps: true,
