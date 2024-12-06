@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document, Model } from "mongoose"
+import mongoose, { Schema, Model } from "mongoose"
 
-export interface IUser extends Document {
+export interface IUser{
   firstName: string
   lastName:String
   email: string
@@ -20,8 +20,8 @@ const UserSchema: Schema<IUser> = new Schema(
     phone: { type: String, required: false },
     password: { type: String, required: true },
     role: { type: String, required: true },
-    dob: { type: Date },
-    avatarUrl: { type: String },
+    dob: { type: Date, required: true },
+    avatarUrl: { type: String, required: false },
   },
   {
     timestamps: true,

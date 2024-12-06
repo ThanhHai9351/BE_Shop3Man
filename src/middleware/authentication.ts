@@ -45,7 +45,6 @@ const authenticationToken = async (req: Request, res: Response, next: NextFuncti
     }
     const token = authHeader.split(" ")[1]
     const data: any = await JwtProvider.verifyToken(token, process.env.ACCESS_TOKEN!)
-    console.log(data)
     if (!data) {
       return res.status(411).json({
         status: "ERROR",
