@@ -8,6 +8,7 @@ import CartRouter from "./cart.routes"
 import OrderRouter from "./order.routes"
 import MomoRouter from "./momo.routes"
 import VnPayRouter from "./payment.routes"
+import AuthRouter from "./auth.routes"
 
 const routes = (app: Application): void => {
   app.use("/api/user", UserRouter)
@@ -19,6 +20,7 @@ const routes = (app: Application): void => {
   app.use("/api/order", OrderRouter)
   app.use("/api/momo", MomoRouter)
   app.use("/api/vnpay", VnPayRouter)
+  app.use("/api/auth", AuthRouter)
 }
 
 export default routes
