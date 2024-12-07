@@ -1,116 +1,50 @@
 import ProductService from "../services/product.service"
-import Joi from "joi"
 import { Request, Response } from "express"
+import { DTOCreateCategory, DTOEditCategory } from "../dto/product.dto"
+import { HttpMessage, HttpStatus } from "../global/globalEnum"
 
 const createProduct = async (req: Request, res: Response): Promise<Response> => {
-  const schema = Joi.object({
-    name: Joi.string().required(),
-    price: Joi.number().required(),
-    slug: Joi.string().required(),
-    imageMain: Joi.string().optional(),
-    image: Joi.array().items(Joi.string()).optional(),
-    description: Joi.string().optional(),
-    categoryid: Joi.string().pattern(new RegExp("^[0-9a-fA-F]{24}$")).required(),
-    quantity: Joi.number().required(),
-    size: Joi.array()
-      .items(
-        Joi.object({
-          numberSize: Joi.number().required(),
-          color: Joi.array()
-            .items(
-              Joi.object({
-                name: Joi.string().required(),
-                quantity: Joi.number().required(),
-              }),
-            )
-            .required(),
-        }),
-      )
-      .optional(),
-  })
-
   try {
-    const { error, value } = schema.validate(req.body)
+    const { error, value } = DTOCreateCategory(req.body)
 
     if (error) {
-      return res.status(400).json({
-        status: "ERROR",
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: HttpStatus.BAD_REQUEST,
         message: error.details[0].message,
       })
     }
 
     const respon = await ProductService.createProductService(value)
-    return res.status(200).json(respon)
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERROR",
-      message: err instanceof Error ? err.message : "Unknown error occurred",
+    return res.status(HttpStatus.OK).json(respon)
+  } catch {
+    return res.status(HttpStatus.SERVER_ERROR).json({
+      status: HttpStatus.SERVER_ERROR,
+      message: HttpMessage.SERVER_ERROR,
     })
   }
 }
 const updateProduct = async (req: Request, res: Response): Promise<Response> => {
-  const schema = Joi.object({
-    name: Joi.string().optional(),
-    price: Joi.number().optional(),
-    imageMain: Joi.string().optional(),
-    image: Joi.array().items(Joi.string()).optional(),
-    description: Joi.string().optional(),
-    categoryid: Joi.string().pattern(new RegExp("^[0-9a-fA-F]{24}$")).optional(),
-    quantity: Joi.number().optional(),
-    color: Joi.array()
-      .items(
-        Joi.object({
-          name: Joi.string().optional(),
-          size: Joi.array()
-            .items(
-              Joi.object({
-                numberSize: Joi.number().optional(),
-                quantity: Joi.number().optional(),
-              }),
-            )
-            .optional(),
-        }),
-      )
-      .optional(),
-    size: Joi.array()
-      .items(
-        Joi.object({
-          numberSize: Joi.number().optional(),
-          color: Joi.array()
-            .items(
-              Joi.object({
-                name: Joi.string().optional(),
-                quantity: Joi.number().optional(),
-              }),
-            )
-            .optional(),
-        }),
-      )
-      .optional(),
-  })
-
   try {
-    const { error, value } = schema.validate(req.body)
+    const { error, value } = DTOEditCategory(req.body)
     if (error) {
-      return res.status(400).json({
-        status: "ERROR",
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: HttpStatus.BAD_REQUEST,
         message: error.details[0].message,
       })
     }
     const id = req.params.id
     if (!id) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: "Id isvalid",
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: HttpStatus.BAD_REQUEST,
+        message: HttpMessage.BAD_REQUEST,
       })
     }
-
     const respon = await ProductService.updateProductService(id, value)
-    return res.status(200).json(respon)
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERROR",
-      message: err instanceof Error ? err.message : "Unknown error occurred",
+    return res.status(HttpStatus.OK).json(respon)
+  } catch {
+    return res.status(HttpStatus.SERVER_ERROR).json({
+      status: HttpStatus.SERVER_ERROR,
+      message: HttpMessage.SERVER_ERROR,
     })
   }
 }
@@ -119,35 +53,37 @@ const detailProduct = async (req: Request, res: Response): Promise<Response> => 
   try {
     const id = req.params.id
     if (!id) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: "Id isvalid",
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: HttpStatus.BAD_REQUEST,
+        message: HttpMessage.BAD_REQUEST,
       })
     }
-
     const respon = await ProductService.detailProductService(id)
-    return res.status(200).json(respon)
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERROR",
-      message: err instanceof Error ? err.message : "Unknown error occurred",
+    return res.status(HttpStatus.OK).json(respon)
+  } catch {
+    return res.status(HttpStatus.SERVER_ERROR).json({
+      status: HttpStatus.SERVER_ERROR,
+      message: HttpMessage.SERVER_ERROR,
     })
   }
 }
 
 const getAllProduct = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { limit, page, filter } = req.query
+    const { limit, page, search, sortDir, priceFrom, priceTo } = req.query
     const respon = await ProductService.getAllProductService(
-      Number(limit) || 5,
+      Number(limit) || 10,
       Number(page) || 0,
-      (filter as string) || "",
+      (search as string) || "",
+      (sortDir as string) || "asc",
+      priceFrom ? Number(priceFrom) : undefined,
+      priceTo ? Number(priceTo) : undefined,
     )
-    return res.status(200).json(respon)
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERROR",
-      message: err instanceof Error ? err.message : "Unknown error occurred",
+    return res.status(HttpStatus.OK).json(respon)
+  } catch {
+    return res.status(HttpStatus.SERVER_ERROR).json({
+      status: HttpStatus.SERVER_ERROR,
+      message: HttpMessage.SERVER_ERROR,
     })
   }
 }
@@ -156,21 +92,21 @@ const deleteProduct = async (req: Request, res: Response): Promise<Response> => 
   try {
     const id = req.params.id
     if (!id) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: "Id isvalid",
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: HttpStatus.BAD_REQUEST,
+        message: HttpMessage.BAD_REQUEST,
       })
     }
-
     const respon = await ProductService.deleteProductService(id)
-    return res.status(200).json(respon)
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERROR",
-      message: err instanceof Error ? err.message : "Unknown error occurred",
+    return res.status(HttpStatus.OK).json(respon)
+  } catch {
+    return res.status(HttpStatus.SERVER_ERROR).json({
+      status: HttpStatus.SERVER_ERROR,
+      message: HttpMessage.SERVER_ERROR,
     })
   }
 }
+
 const ProductController = { createProduct, updateProduct, detailProduct, deleteProduct, getAllProduct }
 
 export default ProductController

@@ -1,12 +1,19 @@
+import { HttpMessage, HttpStatus } from "../global/globalEnum"
+import Category from "../models/category.model"
 import Product, { IProduct } from "../models/product.model"
-import { createClient } from "redis"
-
-const redisClient = createClient()
-redisClient.connect().catch(console.error)
+import redisClient from "../redis/connectRedis"
 
 const createProductService = (data: IProduct) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const { categoryId } = data
+      const checkCategory = await Category.findById(categoryId)
+      if (!checkCategory) {
+        resolve({
+          status: HttpStatus.NOT_FOUND,
+          message: "CategoryId isvalid!",
+        })
+      }
       const createProduct = await Product.create(data)
 
       resolve({
@@ -26,8 +33,8 @@ const updateProductService = (id: string, data: IProduct) => {
       const checkProduct = await Product.findById(id)
       if (!checkProduct) {
         resolve({
-          status: "Error",
-          message: "Dont know product",
+          status: HttpStatus.NOT_FOUND,
+          message: "Server Don't Found Product!",
         })
         return
       }
@@ -36,8 +43,8 @@ const updateProductService = (id: string, data: IProduct) => {
       })
 
       resolve({
-        status: "OK",
-        message: "product update successfully!",
+        status: HttpStatus.OK,
+        message: HttpMessage.OK,
         data: updateProduct,
       })
     } catch (e) {
@@ -52,14 +59,14 @@ const detailProductService = (id: string) => {
       const checkProduct = await Product.findById(id)
       if (!checkProduct) {
         resolve({
-          status: "Error",
-          message: "Dont know product",
+          status: HttpStatus.NOT_FOUND,
+          message: "Server Don't Found Product!",
         })
         return
       }
       resolve({
-        status: "OK",
-        message: "product detail successfully!",
+        status: HttpStatus.OK,
+        message: HttpMessage.OK,
         data: checkProduct,
       })
     } catch (e) {
@@ -74,15 +81,15 @@ const deleteProductService = (id: string) => {
       const checkProduct = await Product.findById(id)
       if (!checkProduct) {
         resolve({
-          status: "Error",
-          message: "Dont know product",
+          status: HttpStatus.NOT_FOUND,
+          message: "Server Don't Found Product!",
         })
         return
       }
       const deleteProduct = await Product.findByIdAndDelete(id)
       resolve({
-        status: "OK",
-        message: "product delete successfully!",
+        status: HttpStatus.OK,
+        message: HttpMessage.OK,
         data: deleteProduct,
       })
     } catch (e) {
@@ -91,11 +98,18 @@ const deleteProductService = (id: string) => {
   })
 }
 
-const getAllProductService = (limit: number, page: number, filter: string) => {
+const getAllProductService = (
+  limit: number,
+  page: number,
+  filter?: string,
+  sortDir: string = "asc",
+  priceFrom?: number,
+  priceTo?: number,
+) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Tạo cache key dựa trên limit, page và filter
-      const cacheKey = `products:limit=${limit}:page=${page}:filter=${filter || "all"}`
+      const cacheKey = `products:limit=${limit}:page=${page}:filter=${filter || "all"}:sort=${sortDir}:priceFrom=${priceFrom || 0}:priceTo=${priceTo || "max"}`
 
       // Kiểm tra dữ liệu trong cache
       const cachedData = await redisClient.get(cacheKey)
@@ -104,15 +118,23 @@ const getAllProductService = (limit: number, page: number, filter: string) => {
       }
 
       // Nếu không có cache, thực hiện truy vấn MongoDB
-      let query = {}
+      let query: any = {}
       if (filter && filter !== "") {
         query = {
           name: { $regex: filter, $options: "i" },
         }
       }
+      if (priceFrom !== undefined || priceTo !== undefined) {
+        query.price = {}
+        if (priceFrom !== undefined) query.price.$gte = priceFrom
+        if (priceTo !== undefined) query.price.$lte = priceTo
+      }
+
+      const sortOrder = sortDir === "desc" ? -1 : 1
 
       const totalProduct = await Product.countDocuments(query)
       const allProduct = await Product.find(query)
+        .sort({ name: sortOrder })
         .limit(limit)
         .skip(limit * page)
 

@@ -4,7 +4,7 @@ export interface IProduct {
   name: string
   price: number
   slug: String
-  imageUrl?: string
+  imageUrl: string
   description?: string
   categoryId: mongoose.Schema.Types.ObjectId
 }

@@ -6,7 +6,7 @@ const router: Router = express.Router()
 
 router.post("/", Authentication.authenticationRoles, ProductController.createProduct)
 router.put("/:id", Authentication.authenticationRoles, ProductController.updateProduct)
-router.get("/:id", Authentication.authenticationToken, ProductController.detailProduct)
+router.get("/:id", ProductController.detailProduct)
 router.delete("/:id", Authentication.authenticationRoles, ProductController.deleteProduct)
 router.get("/", ProductController.getAllProduct)
 
