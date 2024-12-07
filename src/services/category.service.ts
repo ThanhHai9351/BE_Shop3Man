@@ -1,9 +1,6 @@
 import { HttpMessage, HttpStatus } from "../global/globalEnum"
 import Category, { ICategory } from "../models/category.model"
-import { createClient } from "redis"
-
-const redisClient = createClient()
-redisClient.connect().catch(console.error)
+import redisClient from "../redis/connectRedis"
 
 const getAllCategoryService = (limit: number, page: number, search: string, sortDir: string) => {
   return new Promise(async (resolve, reject) => {
@@ -55,7 +52,7 @@ const updateCategoryService = (id: string, data: ICategory) => {
       if (!checkCategory) {
         resolve({
           status: HttpStatus.NOT_FOUND,
-          message: "Server don't found category!",
+          message: "Server Don't Found Category!",
         })
         return
       }
@@ -104,7 +101,7 @@ const deleteCategoryService = (id: string) => {
       if (!checkCategory) {
         resolve({
           status: HttpStatus.NOT_FOUND,
-          message: "Category Not Found!",
+          message: "Server Don't Found Category!",
         })
         return
       }

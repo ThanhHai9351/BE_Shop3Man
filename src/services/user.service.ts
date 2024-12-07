@@ -1,11 +1,8 @@
 import User, { IUser } from "../models/user.model"
 import { JwtProvider } from "../providers/jwt-provider"
-import { createClient } from "redis"
+import redisClient from "../redis/connectRedis"
 import bcrypt from "bcrypt"
 import { HttpMessage, HttpStatus } from "../global/globalEnum"
-
-const redisClient = createClient()
-redisClient.connect().catch(console.error)
 
 const createUserService = (data: IUser) => {
   return new Promise(async (resolve, reject) => {
