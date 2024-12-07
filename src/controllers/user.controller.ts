@@ -5,7 +5,7 @@ import { HttpMessage, HttpStatus } from "../global/globalEnum"
 
 const createUser = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const {error,value} = DTOCreateUser(req.body)
+    const { error, value } = DTOCreateUser(req.body)
     if (error) {
       return res.status(400).json({
         status: "ERROR",
@@ -35,7 +35,8 @@ const login = async (req: Request, res: Response): Promise<Response> => {
 
     const respon = await UserService.loginService(value.email, value.password)
     return res.status(HttpStatus.OK).json(respon)
-  } catch (err) {
+  } catch (err: unknown) {
+    console.log(err)
     return res.status(HttpStatus.SERVER_ERROR).json({
       status: HttpStatus.SERVER_ERROR,
       message: HttpMessage.SERVER_ERROR,
@@ -55,7 +56,8 @@ const getUserFromToken = async (req: Request, res: Response): Promise<Response> 
     const token = authHeader.split(" ")[1]
     const respon = await UserService.getUserFromToken(token)
     return res.status(HttpStatus.OK).json(respon)
-  } catch (err) {
+  } catch (err: unknown) {
+    console.log(err)
     return res.status(HttpStatus.SERVER_ERROR).json({
       status: HttpStatus.SERVER_ERROR,
       message: HttpStatus.SERVER_ERROR,
@@ -65,24 +67,24 @@ const getUserFromToken = async (req: Request, res: Response): Promise<Response> 
 
 const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { limit, page, search, sortDir} = req.query;
+    const { limit, page, search, sortDir } = req.query
 
     const respon = await UserService.getAllUsers(
       Number(limit) || 5,
       Number(page) || 0,
       (search as string) || "",
       (sortDir as string) || "asc",
-    );
+    )
 
-    return res.status(HttpStatus.OK).json(respon);
-  } catch (error) {
+    return res.status(HttpStatus.OK).json(respon)
+  } catch (err: unknown) {
+    console.log(err)
     return res.status(HttpStatus.SERVER_ERROR).json({
       status: HttpStatus.SERVER_ERROR,
       message: "Internal server error",
-    });
+    })
   }
-};
-
+}
 
 const updateUser = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -100,7 +102,8 @@ const updateUser = async (req: Request, res: Response): Promise<Response> => {
 
     const respon = await UserService.updateUserService(id, value)
     return res.status(HttpStatus.OK).json(respon)
-  } catch (err) {
+  } catch (err: unknown) {
+    console.log(err)
     return res.status(HttpStatus.SERVER_ERROR).json({
       status: HttpStatus.SERVER_ERROR,
       message: HttpStatus.SERVER_ERROR,
@@ -117,7 +120,8 @@ const deleteUser = async (req: Request, res: Response): Promise<Response> => {
 
     const respon = await UserService.deleteUserService(id)
     return res.status(HttpStatus.OK).json(respon)
-  } catch (err) {
+  } catch (err: unknown) {
+    console.log(err)
     return res.status(HttpStatus.SERVER_ERROR).json({
       status: HttpStatus.SERVER_ERROR,
       message: HttpStatus.SERVER_ERROR,

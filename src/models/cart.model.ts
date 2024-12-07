@@ -18,15 +18,15 @@ export interface ICartItem {
 const cartSchema: Schema<ICart> = new Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
-    items:[
+    items: [
       {
         productId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Product" },
         color: { type: String, required: true },
-        size: { type: String, required: true }, 
+        size: { type: String, required: true },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
         totalPrice: { type: Number, required: true },
-      }
+      },
     ],
     totalMoney: { type: Number, required: true },
   },

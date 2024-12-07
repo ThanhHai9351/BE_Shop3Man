@@ -36,7 +36,8 @@ const verifyToken = async (token: string, secretSignature: string): Promise<JwtP
       role: res.role,
     }
     return data
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error)
     return null
   }
 }

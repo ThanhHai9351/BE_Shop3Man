@@ -1,13 +1,14 @@
+import { HttpMessage, HttpStatus } from "../global/globalEnum"
 import Category, { ICategory } from "../models/category.model"
 import { createClient } from "redis"
 
 const redisClient = createClient()
 redisClient.connect().catch(console.error)
 
-const getAllCategoryService = (limit: number, page: number, filter: string) => {
+const getAllCategoryService = (limit: number, page: number, search: string, sortDir: string) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const cacheKey = `categories:limit=${limit}:page=${page}:filter=${filter || "all"}`
+      const cacheKey = `categories:limit=${limit}:page=${page}:search=${search || "all"}:sort=${sortDir}}`
 
       // Kiểm tra dữ liệu cache
       const cachedData = await redisClient.get(cacheKey)
@@ -16,20 +17,22 @@ const getAllCategoryService = (limit: number, page: number, filter: string) => {
       }
 
       let query = {}
-      if (filter && filter !== "") {
+      if (search && search !== "") {
         query = {
-          name: { $regex: filter, $options: "i" },
+          name: { $regex: search, $options: "i" },
         }
       }
+      const sortOrder = sortDir === "desc" ? -1 : 1
 
       const totalCategory = await Category.countDocuments(query)
       const allCategory = await Category.find(query)
+        .sort({ name: sortOrder })
         .limit(limit)
         .skip(limit * page)
 
       const responseData = {
-        status: "OK",
-        message: "GET ALL Category COMPLETE!",
+        status: HttpStatus.OK,
+        message: HttpMessage.OK,
         data: allCategory,
         total: totalCategory,
         pageCurrent: Number(page + 1),
@@ -37,7 +40,7 @@ const getAllCategoryService = (limit: number, page: number, filter: string) => {
       }
 
       //set thời gian sống cho cache
-      await redisClient.setEx(cacheKey, 3600, JSON.stringify(responseData))
+      await redisClient.setEx(cacheKey, 10, JSON.stringify(responseData))
       resolve(responseData)
     } catch (e) {
       reject(e)
@@ -51,16 +54,16 @@ const updateCategoryService = (id: string, data: ICategory) => {
       const checkCategory = await Category.findById(id)
       if (!checkCategory) {
         resolve({
-          status: "Error",
-          message: "Dont know category",
+          status: HttpStatus.NOT_FOUND,
+          message: "Server don't found category!",
         })
         return
       }
       const updateCategory = await Category.findByIdAndUpdate(id, data, { new: true })
 
       resolve({
-        status: "OK",
-        message: "Category update successfully!",
+        status: HttpStatus.OK,
+        message: HttpMessage.OK,
         data: updateCategory,
       })
     } catch (e) {
@@ -76,16 +79,16 @@ const createCategoryService = (data: ICategory) => {
       const checkCategory = await Category.findOne({ name })
       if (checkCategory) {
         resolve({
-          status: "Error",
-          message: "Category already exists!",
+          status: HttpStatus.BAD_REQUEST,
+          message: "Category Already Exists!",
         })
         return
       }
       const createCategory = await Category.create(data)
 
       resolve({
-        status: "OK",
-        message: "Category created successfully!",
+        status: HttpStatus.OK,
+        message: HttpMessage.OK,
         data: createCategory,
       })
     } catch (e) {
@@ -100,16 +103,16 @@ const deleteCategoryService = (id: string) => {
       const checkCategory = await Category.findById(id)
       if (!checkCategory) {
         resolve({
-          status: "Error",
-          message: "Category not found!",
+          status: HttpStatus.NOT_FOUND,
+          message: "Category Not Found!",
         })
         return
       }
       const deleteCategory = await Category.findByIdAndDelete(id)
 
       resolve({
-        status: "OK",
-        message: "Category delete successfully!",
+        status: HttpStatus.OK,
+        message: HttpMessage.OK,
         data: deleteCategory,
       })
     } catch (e) {
@@ -124,13 +127,13 @@ const detailCategoryService = (id: string) => {
       const category = await Category.findById(id)
       if (!category) {
         resolve({
-          status: "Error",
-          message: "Category not found!",
+          status: HttpStatus.NOT_FOUND,
+          message: "Category Not Found!",
         })
       }
       resolve({
-        status: "OK",
-        message: "Get detail category successfully!",
+        status: HttpStatus.OK,
+        message: HttpMessage.OK,
         data: category,
       })
     } catch (e) {

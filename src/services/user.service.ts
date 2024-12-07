@@ -1,4 +1,3 @@
-import { Response } from "express"
 import User, { IUser } from "../models/user.model"
 import { JwtProvider } from "../providers/jwt-provider"
 import { createClient } from "redis"
@@ -118,7 +117,7 @@ const getUserFromToken = (token: string) => {
   })
 }
 
-const getAllUsers = (limit: number, page: number, search: string, sortDir: string = "asc") => {
+const getAllUsers = (limit: number, page: number, search: string, sortDir: string) => {
   return new Promise(async (resolve, reject) => {
     try {
       const cacheKey = `users:limit=${limit}:page=${page}:search=${search || "all"}:sort=${sortDir}}`
@@ -150,11 +149,10 @@ const getAllUsers = (limit: number, page: number, search: string, sortDir: strin
         totalPage: Math.ceil(totalUsers / limit),
       }
 
-      // Lưu dữ liệu vào Redis với TTL là 1 giờ (3600 giây)
-      await redisClient.setEx(cacheKey, 3600, JSON.stringify(responseData))
+      await redisClient.setEx(cacheKey, 10, JSON.stringify(responseData))
       resolve(responseData)
     } catch (error) {
-      reject(new Error("Unable to fetch users. Please try again later."))
+      reject(error)
     }
   })
 }

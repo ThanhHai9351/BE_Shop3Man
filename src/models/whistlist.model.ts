@@ -5,10 +5,10 @@ export interface IWhistList {
   items: IWhistListItem[]
 }
 
-export interface IWhistListItem{
-  productId: mongoose.Schema.Types.ObjectId,
-  name: String;
-  imageUrl: String;
+export interface IWhistListItem {
+  productId: mongoose.Schema.Types.ObjectId
+  name: String
+  imageUrl: String
   price: Number
 }
 
@@ -21,8 +21,8 @@ const whistlistSchema: Schema<IWhistList> = new Schema(
         name: { type: String, required: true },
         imageUrl: { type: String },
         price: { type: Number, required: true },
-      }
-    ]
+      },
+    ],
   },
   {
     timestamps: true,

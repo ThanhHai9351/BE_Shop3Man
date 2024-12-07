@@ -1,6 +1,5 @@
 import mongoose, { Schema, Model } from "mongoose"
 
-
 export interface IProduct {
   name: string
   price: number

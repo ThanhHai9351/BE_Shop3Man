@@ -6,7 +6,9 @@
     "dev": "nodemon src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --check \"src/**/(*.tsx|*.ts)\"",
-    "prettier:fix": "prettier --write \"src/**/(*.tsx|*.ts)\""
+    "format": "prettier --write \"src/**/(*.tsx|*.ts)\"",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --fix"
   },
   "author": "ThanhHai",
   "license": "ISC",
@@ -49,5 +51,17 @@
     "request": "^2.88.2",
     "socket.io": "^4.8.1",
     "typescript": "^5.5.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "eslint": "^9.16.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-security": "^3.0.1",
+    "globals": "^15.13.0",
+    "typescript-eslint": "^8.17.0"
   }
 }

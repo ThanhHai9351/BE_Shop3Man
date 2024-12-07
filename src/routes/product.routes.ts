@@ -4,10 +4,10 @@ import Authentication from "../middleware/authentication"
 
 const router: Router = express.Router()
 
-router.post("/create", Authentication.authenticationRoles, ProductController.createProduct)
-router.put("/update/:id", Authentication.authenticationRoles, ProductController.updateProduct)
-router.get("/detail/:id", Authentication.authenticationToken, ProductController.detailProduct)
-router.delete("/delete/:id", Authentication.authenticationRoles, ProductController.deleteProduct)
-router.get("/getAll", ProductController.getAllProduct)
+router.post("/", Authentication.authenticationRoles, ProductController.createProduct)
+router.put("/:id", Authentication.authenticationRoles, ProductController.updateProduct)
+router.get("/:id", Authentication.authenticationToken, ProductController.detailProduct)
+router.delete("/:id", Authentication.authenticationRoles, ProductController.deleteProduct)
+router.get("/", ProductController.getAllProduct)
 
 export default router

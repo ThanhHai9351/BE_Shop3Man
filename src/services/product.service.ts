@@ -1,4 +1,3 @@
-import { isNil } from "lodash"
 import Product, { IProduct } from "../models/product.model"
 import { createClient } from "redis"
 
@@ -127,7 +126,7 @@ const getAllProductService = (limit: number, page: number, filter: string) => {
       }
 
       // Lưu dữ liệu vào Redis với TTL là 1 giờ (3600 giây)
-      await redisClient.setEx(cacheKey, 3600, JSON.stringify(responseData))
+      await redisClient.setEx(cacheKey, 10, JSON.stringify(responseData))
       resolve(responseData)
     } catch (e) {
       reject(e)

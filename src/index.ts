@@ -1,10 +1,10 @@
-import express, { Application, Request, Response } from "express"
+import { Request, Response } from "express"
 import dotenv from "dotenv"
 import bodyParser from "body-parser"
 import cors from "cors"
 import routes from "./routes"
-import mongodbConnect from "./db/mongoDBConnect"
-import {app,server} from "./socket/socket"
+import mongodbConnect from "./db/mongodbConnect"
+import { app, server } from "./socket/socket"
 import redisClient from "./redis/connectRedis"
 dotenv.config()
 
@@ -16,10 +16,10 @@ app.get("/api/status", (req: Request, res: Response) => {
 
 app.use(
   cors({
-    origin: "http://localhost:5173", 
-    methods: ['*'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true, 
+    origin: "http://localhost:5173",
+    methods: ["*"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true,
   }),
 )
 
@@ -28,7 +28,7 @@ app.use(bodyParser.json())
 routes(app)
 
 server.listen(port, () => {
-  mongodbConnect();
-  redisClient;
+  mongodbConnect()
+  redisClient
   console.log(`Server is running on port ${port}`)
 })
