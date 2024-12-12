@@ -1,6 +1,6 @@
 import mongoose, { Schema, Model } from "mongoose"
 
-export interface IProductValirant {
+export interface IProductVariant {
   productId: mongoose.Schema.Types.ObjectId
   color: String
   size: Number
@@ -8,7 +8,7 @@ export interface IProductValirant {
   price: Number
 }
 
-const productValirantSchema: Schema<IProductValirant> = new Schema(
+const productVariantSchema: Schema<IProductVariant> = new Schema(
   {
     productId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,9 +25,6 @@ const productValirantSchema: Schema<IProductValirant> = new Schema(
   },
 )
 
-const ProductValirantSchema: Model<IProductValirant> = mongoose.model<IProductValirant>(
-  "ProductValirant",
-  productValirantSchema,
-)
+const ProductVariant: Model<IProductVariant> = mongoose.model<IProductVariant>("ProductValirant", productVariantSchema)
 
-export default ProductValirantSchema
+export default ProductVariant

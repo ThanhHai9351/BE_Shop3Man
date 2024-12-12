@@ -1,5 +1,7 @@
+import mongoose from "mongoose"
 import { HttpMessage, HttpStatus } from "../global/globalEnum"
 import Category from "../models/category.model"
+import ProductVariant from "../models/product-variant.model"
 import Product, { IProduct } from "../models/product.model"
 import redisClient from "../redis/connectRedis"
 
@@ -17,8 +19,8 @@ const createProductService = (data: IProduct) => {
       const createProduct = await Product.create(data)
 
       resolve({
-        status: "OK",
-        message: "Product created successfully!",
+        status: HttpStatus.OK,
+        message: HttpMessage.OK,
         data: createProduct,
       })
     } catch (e) {
@@ -64,10 +66,39 @@ const detailProductService = (id: string) => {
         })
         return
       }
+      const category = await Category.findById(checkProduct.categoryId)
+
+      const productVariantsGroupedBySize = await ProductVariant.aggregate([
+        {
+          $match: { productId: new mongoose.Types.ObjectId(id) },
+        },
+        {
+          $group: {
+            _id: "$size",
+            items: {
+              $push: {
+                _id: "$_id",
+                color: "$color",
+                stockQuantity: "$stockQuantity",
+                price: "$price",
+                createdAt: "$createdAt",
+                updatedAt: "$updatedAt",
+              },
+            },
+          },
+        },
+      ])
+
+      const dataProduct = {
+        ...checkProduct.toObject(),
+        items: productVariantsGroupedBySize,
+        categoryName: category?.name || "",
+      }
+
       resolve({
         status: HttpStatus.OK,
         message: HttpMessage.OK,
-        data: checkProduct,
+        data: dataProduct,
       })
     } catch (e) {
       reject(e)

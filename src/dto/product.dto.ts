@@ -16,9 +16,9 @@ export const DTOCreateCategory = (data: any) => {
 
 export const DTOEditCategory = (data: any) => {
   const schema = Joi.object({
-    name: Joi.string().required(),
+    name: Joi.string().optional(),
     price: Joi.number().optional(),
-    slug: Joi.string().required(),
+    slug: Joi.string().optional(),
     imageUrl: Joi.string().optional(),
     description: Joi.string().optional(),
     categoryId: Joi.string().pattern(new RegExp("^[0-9a-fA-F]{24}$")).optional(),
@@ -27,5 +27,3 @@ export const DTOEditCategory = (data: any) => {
   const { error, value } = schema.validate(data)
   return { error, value }
 }
-
-

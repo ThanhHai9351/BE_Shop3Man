@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  node-app:
+    build: .
+    image: express-app
+    env_file:
+      - .env
+    environment:
+      - MONGODB_URL=${MONGO_DB}
+      - REDIS_URL=${REDIS_HOST}
+      - REDIS_PW=${REDIS_PW}
+      - REDIS_PORT=${REDIS_PORT}
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - node_modules:/src/node-app/node_modules
+    networks:
+      - node-network
+
+  mongodb:
+    image: mongo:4.2.1-bionic
+    ports:
+      - "27017:27017"
+    volumes:
+      - dbdata:/data/db
+    networks:
+      - node-network
+
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "14647:6379"
+    networks:
+      - node-network
+
+  # socket-server:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   image: socket-app
+  #   environment:
+  #     - REDIS_URL=${REDIS_HOST}
+  #   ports:
+  #     - "3003:3001" # Expose a different port for the socket server
+  #   depends_on:
+  #     - redis
+  #   volumes:
+  #     - ./src/socket:/src/socket-app
+  #   networks:
+  #     - node-network
+
+volumes:
+  dbdata:
+  node_modules: # This explicitly declares the node_modules volume
+
+networks:
+  node-network:
+    driver: bridge

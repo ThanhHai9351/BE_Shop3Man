@@ -3,10 +3,11 @@ import mongoose, { Schema, Model } from "mongoose"
 export interface IProduct {
   name: string
   price: number
-  slug: String
-  imageUrl: string
+  slug: string
+  imageUrl?: string
   description?: string
   categoryId: mongoose.Schema.Types.ObjectId
+  items: mongoose.Schema.Types.Mixed
 }
 
 const ProductSchema: Schema<IProduct> = new Schema(
@@ -21,6 +22,7 @@ const ProductSchema: Schema<IProduct> = new Schema(
       required: true,
       ref: "Category",
     },
+    items: { type: Schema.Types.Mixed },
   },
   {
     timestamps: true,

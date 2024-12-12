@@ -33,7 +33,7 @@ const login = async (req: Request, res: Response): Promise<Response> => {
       })
     }
 
-    const respon = await UserService.loginService(value.email, value.password)
+    const respon = await UserService.loginService(value.email, value.password, res)
     return res.status(HttpStatus.OK).json(respon)
   } catch (err: unknown) {
     console.log(err)

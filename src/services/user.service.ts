@@ -3,6 +3,7 @@ import { JwtProvider } from "../providers/jwt-provider"
 import redisClient from "../redis/connectRedis"
 import bcrypt from "bcrypt"
 import { HttpMessage, HttpStatus } from "../global/globalEnum"
+import { Response } from "express"
 
 const createUserService = (data: IUser) => {
   return new Promise(async (resolve, reject) => {
@@ -34,7 +35,7 @@ const createUserService = (data: IUser) => {
   })
 }
 
-const loginService = (email: string, password: string) => {
+const loginService = (email: string, password: string, res: Response) => {
   return new Promise(async (resolve, reject) => {
     try {
       const checkUser = await User.findOne({ email })
@@ -60,23 +61,23 @@ const loginService = (email: string, password: string) => {
       const accessToken = await JwtProvider.generateToken(data, process.env.ACCESS_TOKEN!, "24h")
       const refreshToken = await JwtProvider.generateToken(data, process.env.REFRESH_TOKEN!, "30 days")
 
-      // res.cookie("accessToken", accessToken, {
-      //   httpOnly: true,
-      //   secure: false,
-      //   maxAge: 24 * 60 * 60 * 1000,
-      //   sameSite: "lax",
-      //   domain: "localhost",
-      //   path: "/",
-      // })
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "lax",
+        domain: "localhost",
+        path: "/",
+      })
 
-      // res.cookie("refreshToken", refreshToken, {
-      //   httpOnly: true,
-      //   secure: false,
-      //   maxAge: 30 * 24 * 60 * 60 * 1000,
-      //   sameSite: "lax",
-      //   domain: "localhost",
-      //   path: "/",
-      // })
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        sameSite: "lax",
+        domain: "localhost",
+        path: "/",
+      })
 
       resolve({
         status: HttpStatus.OK,
