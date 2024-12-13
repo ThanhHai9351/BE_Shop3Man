@@ -37,22 +37,6 @@ services:
     networks:
       - node-network
 
-  # socket-server:
-  #   build:
-  #     context: .
-  #     dockerfile: ./Dockerfile
-  #   image: socket-app
-  #   environment:
-  #     - REDIS_URL=${REDIS_HOST}
-  #   ports:
-  #     - "3003:3001" # Expose a different port for the socket server
-  #   depends_on:
-  #     - redis
-  #   volumes:
-  #     - ./src/socket:/src/socket-app
-  #   networks:
-  #     - node-network
-
 volumes:
   dbdata:
   node_modules: # This explicitly declares the node_modules volume

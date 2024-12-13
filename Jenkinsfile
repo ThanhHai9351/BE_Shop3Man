@@ -1,5 +1,12 @@
 pipeline {
     agent any
+    tools {
+        nodejs 'nodejs1820'
+    }
+
+    environment {
+        DOCKER_COMPOSE_VERSION = '1.29.2'
+    }
 
     stages {
         stage('Checkout Code') {
@@ -9,17 +16,16 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-    steps {
-        script {
-            def nodejs = tool name: 'NodeJs', type: 'NodeJS'
-            env.PATH = "${nodejs}/bin:${env.PATH}"
-            sh 'node -v'
-            sh 'npm install'
+            steps {
+                script {
+                    sh 'node -v'
+                    sh 'npm -v'
+                    sh 'npm install --legacy-peer-deps'
+                }
+            }
         }
-    }
-}
 
-         stage('Run Test') {
+        stage('Run Tests') {
             steps {
                 script {
                     sh 'npm run test'
@@ -35,26 +41,36 @@ pipeline {
             }
         }
 
-         stage('Run Code') {
-            steps {
-                script {
-                    sh 'npm run dev'
-                }
-            }
-        }
+        // stage('Set Up Docker Compose Environment') {
+        //     steps {
+        //         script {
+        //             echo 'Setting up Docker Compose environment...'
+        //             sh '''
+        //                 mkdir -p $HOME/bin
+        //                 curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/bin/docker-compose
+        //                 chmod +x $HOME/bin/docker-compose
+        //                 export PATH=$HOME/bin:$PATH
+        //                 $HOME/bin/docker-compose -v || docker-compose -v
+        //             '''
+        //         }
+        //     }
+        // }
 
-        stage('Build Docker Image') {
-        steps {
-            script {
-                echo 'Building Docker Image...'
-                sh '''
-                docker-compose -v
-                docker-compose up --build
-                    '''
-                }
-            }
-        }
-}
+        // stage('Deploy with Docker Compose') {
+        //     steps {
+        //         script {
+        //             echo 'Deploying application using Docker Compose...'
+        //             sh '''
+        //                 export MONGO_DB=${MONGO_DB}
+        //                 export REDIS_HOST=${REDIS_HOST}
+        //                 export REDIS_PW=${REDIS_PW}
+        //                 export REDIS_PORT=${REDIS_PORT}
+        //                 $HOME/bin/docker-compose up --build
+        //             '''
+        //         }
+        //     }
+        // }
+    }
 
     post {
         success {
@@ -64,5 +80,4 @@ pipeline {
             echo 'Pipeline failed. Check logs for details.'
         }
     }
-
 }
