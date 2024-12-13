@@ -18,14 +18,14 @@ export const DTOCreateUser = (data: any) => {
 
 export const DTOUpdateUser = (data: any) => {
   const schema = Joi.object({
-    name: Joi.string().optional(),
+    firstName: Joi.string().optional(),
+    lastName: Joi.string().optional(),
     email: Joi.string().email().optional(),
     password: Joi.string().optional(),
     role: Joi.string().optional(),
-    address: Joi.string().optional(),
     dob: Joi.date().optional(),
-    avata: Joi.string().optional(),
-    display_avatar: Joi.string().optional(),
+    avatarUrl: Joi.string().optional(),
+    phone: Joi.string().optional(),
   })
 
   const { error, value } = schema.validate(data)
