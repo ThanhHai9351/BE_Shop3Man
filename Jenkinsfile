@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-    PATH = "/path/to/node/bin:${env.PATH}"
-}
-
     stages {
         stage('Checkout Code') {
             steps {
@@ -15,7 +11,7 @@ pipeline {
         stage('Install Dependencies') {
     steps {
         script {
-            def nodejs = tool name: 'Node_18', type: 'NodeJS'
+            def nodejs = tool name: 'NodeJs', type: 'NodeJS'
             env.PATH = "${nodejs}/bin:${env.PATH}"
             sh 'node -v'
             sh 'npm install'
