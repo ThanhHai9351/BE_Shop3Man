@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        NODE_VERSION = '16.20.0'
-    }
+    PATH = "/path/to/node/bin:${env.PATH}"
+}
 
     stages {
         stage('Checkout Code') {
@@ -13,13 +13,15 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-            steps {
-                script {
-                    sh 'node -v'
-                    sh 'npm install --legacy-peer-deps'
-                }
-            }
+    steps {
+        script {
+            def nodejs = tool name: 'Node_18', type: 'NodeJS'
+            env.PATH = "${nodejs}/bin:${env.PATH}"
+            sh 'node -v'
+            sh 'npm install'
         }
+    }
+}
 
          stage('Run Test') {
             steps {
