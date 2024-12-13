@@ -44,15 +44,20 @@ pipeline {
                 }
             }
         }
-    }
 
-    stage('Build Docker Image') {
+        tage('Build Docker Image') {
     steps {
         script {
-            sh 'docker-compose up --build'
-            }
+            echo 'Building Docker Image...'
+            sh '''
+            docker-compose -v
+            docker-compose up --build
+            '''
         }
     }
+    }
+
+}
 
     post {
         success {
