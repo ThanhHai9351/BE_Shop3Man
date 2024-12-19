@@ -30,7 +30,7 @@ describe("login", () => {
   })
 
   it("should return 400 if validation fails", async () => {
-    const response = await request(app).post("/login").send({ email: "" })
+    const response = await request(app).post("/login").send({ email: "hai@gmail.com" })
 
     expect(response.status).toBe(400)
     expect(response.body).toHaveProperty("message")

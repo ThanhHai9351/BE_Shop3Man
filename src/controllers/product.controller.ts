@@ -51,14 +51,14 @@ const updateProduct = async (req: Request, res: Response): Promise<Response> => 
 
 const detailProduct = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const id = req.params.id
-    if (!id) {
+    const slug = req.params.slug
+    if (!slug) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         status: HttpStatus.BAD_REQUEST,
         message: HttpMessage.BAD_REQUEST,
       })
     }
-    const respon = await ProductService.detailProductService(id)
+    const respon = await ProductService.detailProductService(slug)
     return res.status(HttpStatus.OK).json(respon)
   } catch {
     return res.status(HttpStatus.SERVER_ERROR).json({
@@ -75,7 +75,7 @@ const getAllProduct = async (req: Request, res: Response): Promise<Response> => 
       Number(limit) || 10,
       Number(page) || 0,
       (search as string) || "",
-      (sortDir as string) || "asc",
+      (sortDir as string) || "",
       priceFrom ? Number(priceFrom) : undefined,
       priceTo ? Number(priceTo) : undefined,
     )

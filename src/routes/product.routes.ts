@@ -8,7 +8,7 @@ const router: Router = express.Router()
 //product
 router.post("/", Authentication.authenticationRoles, ProductController.createProduct)
 router.put("/:id", Authentication.authenticationRoles, ProductController.updateProduct)
-router.get("/:id", ProductController.detailProduct)
+router.get("/:slug", ProductController.detailProduct)
 router.delete("/:id", Authentication.authenticationRoles, ProductController.deleteProduct)
 router.get("/", ProductController.getAllProduct)
 

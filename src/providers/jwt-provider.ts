@@ -5,7 +5,8 @@ interface JwtPayload {
 
 export interface JwtPayloadReturn {
   _id: string
-  name: string
+  firstName: string
+  lastName: string
   email: string
   role: string
 }
@@ -31,7 +32,8 @@ const verifyToken = async (token: string, secretSignature: string): Promise<JwtP
     const res = (await JWT.verify(token, secretSignature)) as JwtPayloadReturn
     const data = {
       _id: res._id,
-      name: res.name,
+      firstName: res.firstName,
+      lastName: res.lastName,
       email: res.email,
       role: res.role,
     }

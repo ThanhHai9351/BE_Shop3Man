@@ -1,34 +1,33 @@
 import mongoose, { Schema, Model } from "mongoose"
+import { IProduct } from "./product.model"
 
-export interface IWhistList {
+export interface IWhistlist {
   userId: mongoose.Schema.Types.ObjectId
-  items: IWhistListItem[]
+  product: IProduct
 }
 
-export interface IWhistListItem {
-  productId: mongoose.Schema.Types.ObjectId
-  name: String
-  imageUrl: String
-  price: Number
-}
-
-const whistlistSchema: Schema<IWhistList> = new Schema(
+const whistlistSchema: Schema<IWhistlist> = new Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
-    items: [
-      {
-        productId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Product" },
-        name: { type: String, required: true },
-        imageUrl: { type: String },
-        price: { type: Number, required: true },
+    product: {
+      _id: { type: String, required: true },
+      name: { type: String, required: true },
+      price: { type: Number, required: true },
+      slug: { type: String, required: true },
+      imageUrl: { type: String },
+      description: { type: String },
+      categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "Category",
       },
-    ],
+    },
   },
   {
     timestamps: true,
   },
 )
 
-const WhistList: Model<IWhistList> = mongoose.model<IWhistList>("WhistList", whistlistSchema)
+const Whistlist: Model<IWhistlist> = mongoose.model<IWhistlist>("Whistlist", whistlistSchema)
 
-export default WhistList
+export default Whistlist

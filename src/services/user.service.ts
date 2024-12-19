@@ -56,7 +56,13 @@ const loginService = (email: string, password: string, res: Response) => {
         return
       }
 
-      const data = { _id: checkUser._id, email: checkUser.email, firstName: checkUser.firstName, role: checkUser.role }
+      const data = {
+        _id: checkUser._id,
+        email: checkUser.email,
+        firstName: checkUser.firstName,
+        lastName: checkUser.lastName,
+        role: checkUser.role,
+      }
 
       const accessToken = await JwtProvider.generateToken(data, process.env.ACCESS_TOKEN!, "24h")
       const refreshToken = await JwtProvider.generateToken(data, process.env.REFRESH_TOKEN!, "30 days")

@@ -25,6 +25,6 @@ const productVariantSchema: Schema<IProductVariant> = new Schema(
   },
 )
 
-const ProductVariant: Model<IProductVariant> = mongoose.model<IProductVariant>("ProductValirant", productVariantSchema)
+const ProductVariant: Model<IProductVariant> = mongoose.model<IProductVariant>("ProductVariant", productVariantSchema)
 
 export default ProductVariant

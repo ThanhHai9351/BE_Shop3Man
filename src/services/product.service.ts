@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 import { HttpMessage, HttpStatus } from "../global/globalEnum"
-import Category from "../models/category.model"
+import Category, { ICategory } from "../models/category.model"
 import ProductVariant from "../models/product-variant.model"
 import Product, { IProduct } from "../models/product.model"
 import redisClient from "../redis/connectRedis"
@@ -55,10 +55,25 @@ const updateProductService = (id: string, data: IProduct) => {
   })
 }
 
-const detailProductService = (id: string) => {
+interface IDetailProduct extends IProduct {
+  category: ICategory
+  items: {
+    _id: string // size
+    items: {
+      _id: string
+      color: string
+      stockQuantity: number
+      price: number
+      createdAt: Date
+      updatedAt: Date
+    }[]
+  }[]
+}
+
+const detailProductService = (slug: string) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const checkProduct = await Product.findById(id)
+      const checkProduct = await Product.findOne({ slug }).lean()
       if (!checkProduct) {
         resolve({
           status: HttpStatus.NOT_FOUND,
@@ -66,11 +81,10 @@ const detailProductService = (id: string) => {
         })
         return
       }
-      const category = await Category.findById(checkProduct.categoryId)
-
+      const categoryFilter = await Category.findById(checkProduct.categoryId)
       const productVariantsGroupedBySize = await ProductVariant.aggregate([
         {
-          $match: { productId: new mongoose.Types.ObjectId(id) },
+          $match: { productId: new mongoose.Types.ObjectId(checkProduct._id) },
         },
         {
           $group: {
@@ -89,10 +103,10 @@ const detailProductService = (id: string) => {
         },
       ])
 
-      const dataProduct = {
-        ...checkProduct.toObject(),
+      const dataProduct: IDetailProduct = {
+        ...checkProduct,
+        category: categoryFilter as any,
         items: productVariantsGroupedBySize,
-        categoryName: category?.name || "",
       }
 
       resolve({
@@ -133,7 +147,7 @@ const getAllProductService = (
   limit: number,
   page: number,
   filter?: string,
-  sortDir: string = "asc",
+  sortDir?: string,
   priceFrom?: number,
   priceTo?: number,
 ) => {
@@ -161,11 +175,11 @@ const getAllProductService = (
         if (priceTo !== undefined) query.price.$lte = priceTo
       }
 
-      const sortOrder = sortDir === "desc" ? -1 : 1
+      const sortOrder = sortDir === "desc" ? -1 : sortDir === "asc" ? 1 : undefined
 
       const totalProduct = await Product.countDocuments(query)
       const allProduct = await Product.find(query)
-        .sort({ name: sortOrder })
+        .sort(sortOrder ? { price: sortOrder } : {})
         .limit(limit)
         .skip(limit * page)
 
