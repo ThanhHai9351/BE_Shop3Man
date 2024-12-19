@@ -7,7 +7,7 @@ const getAllCategories = async (req: Request, res: Response): Promise<Response> 
   try {
     const { limit, page, search, sortDir } = req.query
     const respon = await CategoryService.getAllCategoryService(
-      Number(limit) || 6,
+      Number(limit) || 10,
       Number(page) || 0,
       (search as string) || "",
       (sortDir as string) || "asc",

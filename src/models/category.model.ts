@@ -1,10 +1,11 @@
-import mongoose, { Schema, Document, Model } from "mongoose"
+import mongoose, { Schema, Model } from "mongoose"
 
-export interface ICategory extends Document {
-  name: String
-  imageUrl: String
-  decription: String
-  slug: String
+export interface ICategory {
+  _id: string
+  name: string
+  imageUrl: string
+  decription: string
+  slug: string
 }
 
 const categorySchema: Schema<ICategory> = new Schema(
