@@ -1,7 +1,6 @@
 import UserService from "../services/user.service"
 import { Request, Response } from "express"
 import { DTOCreateUser, DTOLoginUser, DTOUpdateUser } from "../../dto/user.dto"
-import { HttpMessage, HttpStatus } from "../../global/globalEnum"
 import { GlobalResponse } from "../../global/globalResponse"
 import { ReasonPhrases, StatusCodes } from "http-status-codes"
 

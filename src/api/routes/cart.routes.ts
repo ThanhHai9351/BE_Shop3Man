@@ -4,10 +4,11 @@ import Authentication from "../../middleware/authentication"
 
 const router: Router = express.Router()
 
-router.post("/create", Authentication.authenticationToken, CartControlller.createCart)
-router.get("/getAll", Authentication.authenticationToken, CartControlller.getAllCart)
-router.get("/detail/:id", Authentication.authenticationToken, CartControlller.detailCart)
-router.put("/update/:id", Authentication.authenticationToken, CartControlller.updateCart)
-router.delete("/delete/:id", Authentication.authenticationToken, CartControlller.deleteCart)
+router.post("/:productId", Authentication.authenticationToken, CartControlller.createCart)
+router.get("/", Authentication.authenticationToken, CartControlller.getAllCart)
+router.delete("/:productId", Authentication.authenticationToken, CartControlller.deleteCart)
+
+// router.get("/detail/:id", Authentication.authenticationToken, CartControlller.detailCart)
+// router.put("/update/:id", Authentication.authenticationToken, CartControlller.updateCart)
 
 export default router
