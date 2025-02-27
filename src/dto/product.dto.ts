@@ -1,11 +1,10 @@
 import Joi from "joi"
 
-export const DTOCreateCategory = (data: any) => {
+export const DTOCreateProduct = (data: any) => {
   const schema = Joi.object({
     name: Joi.string().required(),
     price: Joi.number().required(),
-    slug: Joi.string().required(),
-    imageUrl: Joi.string().required(),
+    imageUrl: Joi.string().optional(),
     description: Joi.string().optional(),
     categoryId: Joi.string().pattern(new RegExp("^[0-9a-fA-F]{24}$")).required(),
   })
@@ -14,11 +13,10 @@ export const DTOCreateCategory = (data: any) => {
   return { error, value }
 }
 
-export const DTOEditCategory = (data: any) => {
+export const DTOEditProduct = (data: any) => {
   const schema = Joi.object({
     name: Joi.string().optional(),
     price: Joi.number().optional(),
-    slug: Joi.string().optional(),
     imageUrl: Joi.string().optional(),
     description: Joi.string().optional(),
     categoryId: Joi.string().pattern(new RegExp("^[0-9a-fA-F]{24}$")).optional(),

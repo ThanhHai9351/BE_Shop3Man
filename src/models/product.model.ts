@@ -15,8 +15,8 @@ const ProductSchema: Schema<IProduct> = new Schema(
     name: { type: String, required: true },
     price: { type: Number, required: true },
     slug: { type: String, required: true },
-    imageUrl: { type: String },
-    description: { type: String },
+    imageUrl: { type: String, required: false },
+    description: { type: String, required: false },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

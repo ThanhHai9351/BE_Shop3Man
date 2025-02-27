@@ -6,8 +6,8 @@ export const DTOCreateUser = (data: any) => {
     lastName: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-    role: Joi.string().required(),
-    dob: Joi.date().required(),
+    role: Joi.string().optional(),
+    dob: Joi.date().optional(),
     avatarUrl: Joi.string().optional(),
     phone: Joi.string().optional(),
   })

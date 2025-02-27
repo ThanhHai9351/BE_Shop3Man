@@ -1,5 +1,5 @@
 import express, { Router } from "express"
-import Authentication from "../middleware/authentication"
+import Authentication from "../../middleware/authentication"
 import WhistlistController from "../controllers/whistlist.controller"
 
 const router: Router = express.Router()

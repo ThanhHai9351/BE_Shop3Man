@@ -1,4 +1,4 @@
-import Cart, { ICart } from "../models/cart.model"
+import Cart, { ICart } from "../../models/cart.model"
 
 const createCartService = (data: ICart) => {
   return new Promise(async (resolve, reject) => {
