@@ -1,13 +1,13 @@
 import mongoose, { Schema, Model } from "mongoose"
 
-export interface IUser {
+export interface IUserAddress {
   userId: mongoose.Schema.Types.ObjectId
   city: string
   district: string
   street: string
 }
 
-const UserSchema: Schema<IUser> = new Schema(
+const UserAddressSchema: Schema<IUserAddress> = new Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
     city: { type: String, required: true },
@@ -19,6 +19,6 @@ const UserSchema: Schema<IUser> = new Schema(
   },
 )
 
-const User: Model<IUser> = mongoose.model<IUser>("User", UserSchema)
+const UserAddress: Model<IUserAddress> = mongoose.model<IUserAddress>("UserAddress", UserAddressSchema)
 
-export default User
+export default UserAddress
