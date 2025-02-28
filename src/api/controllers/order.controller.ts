@@ -1,162 +1,52 @@
-import Joi from "joi"
 import { Request, Response } from "express"
 import OrderService from "../services/order.service"
+import { GlobalResponse } from "../../global/globalResponse"
+import { ReasonPhrases, StatusCodes } from "http-status-codes"
 
 const createOrder = async (req: Request, res: Response): Promise<Response> => {
-  const schema = Joi.object({
-    userid: Joi.string().required(),
-    username: Joi.string().required(),
-    items: Joi.array()
-      .items(
-        Joi.object({
-          productid: Joi.string().required(),
-          name: Joi.string().required(),
-          price: Joi.number().required(),
-          quantity: Joi.number().integer().required(),
-          totalMoney: Joi.number().required(),
-          size: Joi.number().required(),
-          color: Joi.string().required(),
-        }),
-      )
-      .required(),
-    totalPrice: Joi.number().required(),
-    address: Joi.object({
-      city: Joi.string().required(),
-      dictrict: Joi.string().required(),
-      street: Joi.string().required(),
-    }).required(),
-    paymentMethod: Joi.string().required(),
-    paidAt: Joi.date().required(),
-  })
-
   try {
-    const { error, value } = schema.validate(req.body)
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json(GlobalResponse(StatusCodes.UNAUTHORIZED, ReasonPhrases.UNAUTHORIZED))
+    }
+    const token = authHeader.split(" ")[1]
 
-    if (error) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: error.details[0].message,
-      })
+    const addressId = req.params.addressId
+    if (!addressId) {
+      return res.status(StatusCodes.BAD_REQUEST).json(GlobalResponse(StatusCodes.BAD_REQUEST, "Address ID is required"))
     }
 
-    const respon = await OrderService.createOrderService(value)
-    return res.status(200).json(respon)
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERROR",
-      message: err instanceof Error ? err.message : "Unknown error occurred",
-    })
+    return await OrderService.createOrderService(token, addressId, res)
+  } catch {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(GlobalResponse(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR))
   }
 }
 
-const getAllOrder = async (req: Request, res: Response): Promise<Response> => {
+const getAllOrders = async (req: Request, res: Response): Promise<Response> => {
   try {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json(GlobalResponse(StatusCodes.UNAUTHORIZED, ReasonPhrases.UNAUTHORIZED))
+    }
+    const token = authHeader.split(" ")[1]
     const { limit, page } = req.query
-    const respon = await OrderService.getAllOrderService(Number(limit) || 5, Number(page) || 0)
-    return res.status(200).json(respon)
-  } catch (error) {
-    return res.status(404).json({ error })
+    return await OrderService.getAllOrdersService(token, res, Number(limit) || 10, Number(page) || 0)
+  } catch {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(GlobalResponse(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR))
   }
 }
 
-const updateOrder = async (req: Request, res: Response): Promise<Response> => {
-  const schema = Joi.object({
-    userid: Joi.string().optional(),
-    username: Joi.string().optional(),
-    items: Joi.array()
-      .items(
-        Joi.object({
-          productid: Joi.string().optional(),
-          name: Joi.string().optional(),
-          price: Joi.number().optional(),
-          quantity: Joi.number().integer().optional(),
-          totalMoney: Joi.number().optional(),
-          size: Joi.number().optional(),
-          color: Joi.string().optional(),
-        }),
-      )
-      .optional(),
-    totalPrice: Joi.number().optional(),
-    address: Joi.object({
-      city: Joi.string().optional(),
-      dictrict: Joi.string().optional(),
-      street: Joi.string().optional(),
-    }).optional(),
-    paymentMethod: Joi.string().optional(),
-    paidAt: Joi.date().optional(),
-  })
-
-  try {
-    const { error, value } = schema.validate(req.body)
-    if (error) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: error.details[0].message,
-      })
-    }
-    const id = req.params.id
-    if (!id) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: "Id isvalid",
-      })
-    }
-
-    const respon = await OrderService.updateOrderService(id, value)
-    return res.status(200).json(respon)
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERROR",
-      message: err instanceof Error ? err.message : "Unknown error occurred",
-    })
-  }
-}
-
-const deleteOrder = async (req: Request, res: Response): Promise<Response> => {
-  try {
-    const id = req.params.id
-    if (!id) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: "ID not found!",
-      })
-    }
-
-    const respon = await OrderService.deleteOrderService(id)
-    return res.status(200).json(respon)
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERROR",
-      message: err instanceof Error ? err.message : "Unknown error occurred",
-    })
-  }
-}
-
-const detailOrder = async (req: Request, res: Response): Promise<Response> => {
-  try {
-    const id = req.params.id
-    if (!id) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: "ID not found!",
-      })
-    }
-
-    const respon = await OrderService.detailOrderService(id)
-    return res.status(200).json(respon)
-  } catch (err) {
-    return res.status(500).json({
-      status: "ERROR",
-      message: err instanceof Error ? err.message : "Unknown error occurred",
-    })
-  }
-}
 const OrderController = {
   createOrder,
-  getAllOrder,
-  updateOrder,
-  deleteOrder,
-  detailOrder,
+  getAllOrders,
 }
 
 export default OrderController

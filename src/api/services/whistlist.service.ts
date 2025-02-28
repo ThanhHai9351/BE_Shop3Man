@@ -99,6 +99,7 @@ const getWhistlistService = async (
       .sort(sortOrder ? { "product.price": sortOrder } : {})
       .limit(limit)
       .skip(limit * page)
+      .sort({ createdAt: -1 })
 
     return res.status(StatusCodes.OK).json(
       GlobalResponseData(StatusCodes.OK, ReasonPhrases.OK, {

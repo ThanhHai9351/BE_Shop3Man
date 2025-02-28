@@ -216,6 +216,7 @@ const getAllProductService = async (
       .sort(sortOrder ? { price: sortOrder } : {})
       .limit(limit)
       .skip(limit * page)
+      .sort({ createdAt: -1 })
 
     const responseData = {
       data: allProduct,

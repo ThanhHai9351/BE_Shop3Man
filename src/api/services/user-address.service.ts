@@ -44,7 +44,7 @@ const getAllAddressService = async (token: string, res: Response) => {
         .status(StatusCodes.UNAUTHORIZED)
         .json(GlobalResponse(StatusCodes.UNAUTHORIZED, ReasonPhrases.UNAUTHORIZED))
     }
-    const address = await UserAddress.find({ userId: data._id })
+    const address = await UserAddress.find({ userId: data._id }).sort({ createdAt: -1 })
     return res.status(StatusCodes.OK).json(GlobalResponseData(StatusCodes.OK, ReasonPhrases.OK, address))
   } catch {
     return res

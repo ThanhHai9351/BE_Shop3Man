@@ -7,7 +7,7 @@ export interface IUserAddress {
   street: string
 }
 
-const UserAddressSchema: Schema<IUserAddress> = new Schema(
+export const userAddressSchema: Schema<IUserAddress> = new Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
     city: { type: String, required: true },
@@ -19,6 +19,6 @@ const UserAddressSchema: Schema<IUserAddress> = new Schema(
   },
 )
 
-const UserAddress: Model<IUserAddress> = mongoose.model<IUserAddress>("UserAddress", UserAddressSchema)
+const UserAddress: Model<IUserAddress> = mongoose.model<IUserAddress>("UserAddress", userAddressSchema)
 
 export default UserAddress

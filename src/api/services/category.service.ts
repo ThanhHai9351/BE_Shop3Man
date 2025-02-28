@@ -32,6 +32,7 @@ const getAllCategoryService = async (limit: number, page: number, search: string
       .sort({ name: sortOrder })
       .limit(limit)
       .skip(limit * page)
+      .sort({ createdAt: -1 })
 
     const responseData = {
       data: allCategory,

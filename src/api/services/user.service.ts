@@ -126,6 +126,7 @@ const getAllUsers = async (limit: number, page: number, search: string, sortDir:
       .sort({ firstName: sortOrder })
       .limit(limit)
       .skip(limit * page)
+      .sort({ createdAt: -1 })
 
     const responseData = {
       data: allUsers,

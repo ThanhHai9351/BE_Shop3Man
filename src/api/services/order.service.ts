@@ -1,119 +1,80 @@
-import Order, { IOrder } from "../../models/order.model"
+import { ReasonPhrases, StatusCodes } from "http-status-codes"
+import { GlobalResponse, GlobalResponseData } from "../../global/globalResponse"
+import Order, { EPayment, EStatus } from "../../models/order.model"
+import { JwtProvider } from "../../providers/jwt-provider"
+import { Response } from "express"
+import Cart from "../../models/cart.model"
+import Address from "../../models/user-address.model"
 
-const createOrderService = (data: IOrder) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const createOrder = await Order.create(data)
-
-      resolve({
-        status: "OK",
-        message: "Order created successfully!",
-        data: createOrder,
-      })
-    } catch (e) {
-      reject(e)
+const createOrderService = async (token: string, addressId: string, res: Response) => {
+  try {
+    const data: any = await JwtProvider.verifyToken(token, process.env.ACCESS_TOKEN!)
+    if (!data) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json(GlobalResponse(StatusCodes.UNAUTHORIZED, "Invalid token or user not found"))
     }
-  })
+
+    const addressCheck = await Address.findById(addressId)
+    if (!addressCheck) {
+      return res.status(StatusCodes.BAD_REQUEST).json(GlobalResponse(StatusCodes.BAD_REQUEST, "Address not found"))
+    }
+
+    const allCart = await Cart.find({ userId: data._id })
+    const order = await Order.create({
+      userId: data._id,
+      items: allCart,
+      quantity_item: allCart.length,
+      totalMoney: allCart.reduce((acc, curr) => acc + curr.price, 0),
+      address: { city: addressCheck.city, district: addressCheck.district, street: addressCheck.street },
+      paymentMethod: EPayment.VNPAY,
+      status: EStatus.PENDING,
+      paidAt: new Date(),
+    })
+
+    return res.status(StatusCodes.OK).json(GlobalResponseData(StatusCodes.OK, ReasonPhrases.OK, order))
+  } catch (error) {
+    console.error(error)
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(GlobalResponse(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR))
+  }
 }
 
-const getAllOrderService = (limit: number, page: number) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const totalOrders = await Order.countDocuments()
-      const allOrders = await Order.find()
-        .limit(limit)
-        .skip(limit * page)
-      resolve({
-        status: "OK",
-        message: "GET ALL ORDER COMPLETE!",
-        data: allOrders,
-        total: totalOrders,
-        pageCurrent: Number(page + 1),
-        totalPage: Math.ceil(totalOrders / limit),
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
+export const handleChangeStatusOrder = async (orderId: string, status: EStatus) => {
+  try {
+    await Order.findByIdAndUpdate(orderId, { status }, { new: true })
+    return true
+  } catch {
+    return false
+  }
 }
 
-const updateOrderService = (id: string, data: IOrder) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const checkOrder = await Order.findById(id)
-      if (!checkOrder) {
-        resolve({
-          status: "Error",
-          message: "Dont know order",
-        })
-        return
-      }
-      const updateOrder = await Order.findByIdAndUpdate(id, data, {
-        new: true,
-      })
-
-      resolve({
-        status: "OK",
-        message: "Order update successfully!",
-        data: updateOrder,
-      })
-    } catch (e) {
-      reject(e)
+const getAllOrdersService = async (token: string, res: Response, limit: number, page: number) => {
+  try {
+    const data: any = await JwtProvider.verifyToken(token, process.env.ACCESS_TOKEN!)
+    const orders = await Order.find({ userId: data._id })
+      .skip(limit * page)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+    const total = await Order.countDocuments({ userId: data._id })
+    const dataResponse = {
+      data: orders,
+      total: total,
+      pageCurrent: page + 1,
+      totalPage: Math.ceil(total / limit),
     }
-  })
-}
-
-const deleteOrderService = (id: string) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const checkOrder = await Order.findById(id)
-      if (!checkOrder) {
-        resolve({
-          status: "Error",
-          message: "Category not found!",
-        })
-        return
-      }
-      const deleteOrder = await Order.findByIdAndDelete(id)
-
-      resolve({
-        status: "OK",
-        message: "Order delete successfully!",
-        data: deleteOrder,
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
-}
-
-const detailOrderService = (id: string) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const checkOrder = await Order.findById(id)
-      if (!checkOrder) {
-        resolve({
-          status: "Error",
-          message: "Order not found!",
-        })
-      }
-      resolve({
-        status: "OK",
-        message: "Get detail order successfully!",
-        data: checkOrder,
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
+    return res.status(StatusCodes.OK).json(GlobalResponseData(StatusCodes.OK, ReasonPhrases.OK, dataResponse))
+  } catch {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(GlobalResponse(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR))
+  }
 }
 
 const OrderService = {
   createOrderService,
-  getAllOrderService,
-  updateOrderService,
-  deleteOrderService,
-  detailOrderService,
+  getAllOrdersService,
 }
 
 export default OrderService

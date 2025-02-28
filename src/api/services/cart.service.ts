@@ -48,7 +48,7 @@ const createCartService = async (
         {
           $set: {
             quantity: cartCheck.quantity + 1,
-            price: Number(productVariants[0].price) * (cartCheck.quantity + 1),
+            price: Number(productVariants[0].price) + cartCheck.price,
           },
         },
         {
@@ -83,7 +83,7 @@ const getAllCartService = async (token: string, res: Response) => {
         .json(GlobalResponse(StatusCodes.BAD_REQUEST, "Invalid token! User not found!"))
     }
 
-    const getAllCart = await Cart.find({ userId: data._id })
+    const getAllCart = await Cart.find({ userId: data._id }).sort({ createdAt: -1 })
 
     return res.status(StatusCodes.OK).json(GlobalResponseData(StatusCodes.OK, ReasonPhrases.OK, getAllCart))
   } catch {

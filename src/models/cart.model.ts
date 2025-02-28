@@ -10,7 +10,7 @@ export interface ICart extends Document {
   price: number
 }
 
-const cartSchema: Schema<ICart> = new Schema(
+export const cartSchema: Schema<ICart> = new Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
     product: { type: Object, required: true },

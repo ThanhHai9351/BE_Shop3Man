@@ -3,6 +3,8 @@ import moment from "moment"
 import config from "config"
 import crypto from "crypto"
 import querystring from "qs"
+import { EStatus } from "../../models/order.model"
+import { handleChangeStatusOrder } from "../services/order.service"
 
 const router = express.Router()
 
@@ -87,7 +89,7 @@ function sortObject(obj: Record<string, any>): Record<string, any> {
   return sorted
 }
 
-router.get("/vnpay_ipn", function (req, res, next) {
+router.get("/vnpay_ipn", async function (req, res, next) {
   let vnp_Params = req.query
   const secureHash = vnp_Params["vnp_SecureHash"]
 
@@ -109,15 +111,13 @@ router.get("/vnpay_ipn", function (req, res, next) {
 
     // Check response code from VNPay
     if (rspCode !== "00") {
-      return res.status(400).json({
-        RspCode: rspCode,
-        Message: "Payment failed or cancelled",
-      })
+      await handleChangeStatusOrder(orderId as string, EStatus.CANCEL)
+      return res.status(200).json({ RspCode: "97", Message: "Invalid signature" })
     }
-
-    res.status(200).json({ RspCode: "00", Message: "success" })
+    await handleChangeStatusOrder(orderId as string, EStatus.SUCCESS)
+    return res.status(200).json({ RspCode: "00", Message: "success" })
   } else {
-    res.status(400).json({ RspCode: "97", Message: "Invalid signature" })
+    res.status(200).json({ RspCode: "97", Message: "Invalid signature" })
   }
 })
 
