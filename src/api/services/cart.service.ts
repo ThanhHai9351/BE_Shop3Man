@@ -7,7 +7,6 @@ import { JwtProvider } from "../../providers/jwt-provider"
 import ProductVariant from "../../models/product-variant.model"
 import Product from "../../models/product.model"
 import mongoose from "mongoose"
-import { check } from "prettier"
 const createCartService = async (
   values: Omit<ICart, "userId" | "product" | "price" | "quantity">,
   productId: string,
@@ -87,8 +86,7 @@ const getAllCartService = async (token: string, res: Response) => {
     const getAllCart = await Cart.find({ userId: data._id })
 
     return res.status(StatusCodes.OK).json(GlobalResponseData(StatusCodes.OK, ReasonPhrases.OK, getAllCart))
-  } catch (error) {
-    console.error("Error in getAllCartService:", error)
+  } catch {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(GlobalResponse(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR))
@@ -148,10 +146,28 @@ const deleteCartService = async (
   }
 }
 
+const removeAllCartService = async (token: string, res: Response) => {
+  try {
+    const data: any = await JwtProvider.verifyToken(token, process.env.ACCESS_TOKEN!)
+    if (!data) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(GlobalResponse(StatusCodes.BAD_REQUEST, "Invalid token! User not found!"))
+    }
+    const removeAllCart = await Cart.deleteMany({ userId: data._id })
+    return res.status(StatusCodes.OK).json(GlobalResponseData(StatusCodes.OK, ReasonPhrases.OK, removeAllCart))
+  } catch {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(GlobalResponse(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR))
+  }
+}
+
 const CartService = {
   createCartService,
   getAllCartService,
   deleteCartService,
+  removeAllCartService,
 }
 
 export default CartService
