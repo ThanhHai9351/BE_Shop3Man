@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express"
-import request from "request"
 import moment from "moment"
 import config from "config"
 import crypto from "crypto"
@@ -15,24 +14,6 @@ interface Config {
   vnp_Api: string
 }
 
-// Render pages
-router.get("/", (req: Request, res: Response) => {
-  res.render("orderlist", { title: "Danh sách đơn hàng" })
-})
-
-router.get("/create_payment_url", (req: Request, res: Response) => {
-  res.render("order", { title: "Tạo mới đơn hàng", amount: 10000 })
-})
-
-router.get("/querydr", (req: Request, res: Response) => {
-  console.log("jjaall")
-  res.render("querydr", { title: "Truy vấn kết quả thanh toán" })
-})
-
-router.get("/refund", (req: Request, res: Response) => {
-  res.render("refund", { title: "Hoàn tiền giao dịch thanh toán" })
-})
-
 // Create payment URL
 router.post("/create_payment_url", (req: Request, res: Response) => {
   process.env.TZ = "Asia/Ho_Chi_Minh"
@@ -47,9 +28,18 @@ router.post("/create_payment_url", (req: Request, res: Response) => {
   let vnpUrl = config.get<string>("vnp_Url")
   const returnUrl = config.get<string>("vnp_ReturnUrl")
 
-  const { orderId, amount, bankCode, language } = req.body
+  const { orderId, amount, language } = req.body
+
+  // Validate required fields
+  if (!orderId || !amount) {
+    return res.status(400).json({
+      error: "Missing required fields: orderId and amount are required",
+    })
+  }
+
   const locale = language || "vn"
   const currCode = "VND"
+  const bankCode = "NCB"
 
   let vnp_Params: Record<string, string | number> = {
     vnp_Version: "2.1.0",
@@ -97,226 +87,38 @@ function sortObject(obj: Record<string, any>): Record<string, any> {
   return sorted
 }
 
-router.get("/vnpay_return", (req: Request, res: Response) => {
+router.get("/vnpay_ipn", function (req, res, next) {
   let vnp_Params = req.query
-  const secureHash = vnp_Params["vnp_SecureHash"] as string
+  const secureHash = vnp_Params["vnp_SecureHash"]
 
   delete vnp_Params["vnp_SecureHash"]
   delete vnp_Params["vnp_SecureHashType"]
 
   vnp_Params = sortObject(vnp_Params)
-
-  const tmnCode = config.get<string>("vnp_TmnCode")
-  const secretKey = config.get<string>("vnp_HashSecret")
-
-  const signData = querystring.stringify(vnp_Params, { encode: false })
-  const hmac = crypto.createHmac("sha512", secretKey)
-  const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex")
-
-  // if (secureHash === signed) {
-  //   const orderId = req.query.vnp_TxnRef as string;
-  //   con.connect((err) => {
-  //     if (err) throw err;
-  //     const sql = "UPDATE `order` SET state = ? WHERE order_id = ?";
-  //     con.query(sql, ["banked", orderId.toString()]);
-  //     con.end();
-  //   });
-
-  //   res.render("success", { code: vnp_Params["vnp_ResponseCode"] });
-  // } else {
-  //   res.render("success", { code: "97" });
-  // }
-})
-
-router.get("/vnpay_ipn", (req: Request, res: Response) => {
-  let vnp_Params = req.query
-  const secureHash = vnp_Params["vnp_SecureHash"] as string
-
-  const orderId = vnp_Params["vnp_TxnRef"] as string
-  const rspCode = vnp_Params["vnp_ResponseCode"] as string
-
-  delete vnp_Params["vnp_SecureHash"]
-  delete vnp_Params["vnp_SecureHashType"]
-
-  vnp_Params = sortObject(vnp_Params)
-  const secretKey = config.get<string>("vnp_HashSecret")
-
-  const signData = querystring.stringify(vnp_Params, { encode: false })
-  const hmac = crypto.createHmac("sha512", secretKey)
-  const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex")
-
-  const paymentStatus = "0" // Initial payment status
-  const checkOrderId = true // Simulate check for order ID in database
-  const checkAmount = true // Simulate check for amount
+  var config = require("config")
+  var secretKey = config.get("vnp_HashSecret")
+  var querystring = require("qs")
+  var signData = querystring.stringify(vnp_Params, { encode: false })
+  var crypto = require("crypto")
+  var hmac = crypto.createHmac("sha512", secretKey)
+  var signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex")
 
   if (secureHash === signed) {
-    if (checkOrderId && checkAmount) {
-      if (paymentStatus === "0") {
-        if (rspCode === "00") {
-          console.log("Thanh cong")
-        } else {
-          console.log("That bai")
-        }
-        res.status(200).json({ RspCode: "00", Message: "Success" })
-      } else {
-        res.status(200).json({
-          RspCode: "02",
-          Message: "This order has been updated to the payment status",
-        })
-      }
-    } else {
-      res.status(200).json({ RspCode: "04", Message: "Amount invalid" })
+    const orderId = vnp_Params["vnp_TxnRef"]
+    const rspCode = vnp_Params["vnp_ResponseCode"]
+
+    // Check response code from VNPay
+    if (rspCode !== "00") {
+      return res.status(400).json({
+        RspCode: rspCode,
+        Message: "Payment failed or cancelled",
+      })
     }
+
+    res.status(200).json({ RspCode: "00", Message: "success" })
   } else {
-    res.status(200).json({ RspCode: "97", Message: "Checksum failed" })
+    res.status(400).json({ RspCode: "97", Message: "Invalid signature" })
   }
-})
-
-router.post("/querydr", (req: Request, res: Response) => {
-  process.env.TZ = "Asia/Ho_Chi_Minh"
-  const date = new Date()
-
-  const vnp_TmnCode = config.get<string>("vnp_TmnCode")
-  const secretKey = config.get<string>("vnp_HashSecret")
-  const vnp_Api = config.get<string>("vnp_Api")
-
-  const { orderId: vnp_TxnRef, transDate: vnp_TransactionDate } = req.body
-
-  const vnp_RequestId = moment(date).format("HHmmss")
-  const vnp_Version = "2.1.0"
-  const vnp_Command = "querydr"
-  const vnp_OrderInfo = "Truy van GD ma:" + vnp_TxnRef
-
-  const ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress
-
-  const vnp_CreateDate = moment(date).format("YYYYMMDDHHmmss")
-
-  const data = [
-    vnp_RequestId,
-    vnp_Version,
-    vnp_Command,
-    vnp_TmnCode,
-    vnp_TxnRef,
-    vnp_TransactionDate,
-    vnp_CreateDate,
-    ipAddr,
-    vnp_OrderInfo,
-  ].join("|")
-
-  const hmac = crypto.createHmac("sha512", secretKey)
-  const vnp_SecureHash = hmac.update(Buffer.from(data, "utf-8")).digest("hex")
-
-  const dataObj = {
-    vnp_RequestId,
-    vnp_Version,
-    vnp_Command,
-    vnp_TmnCode,
-    vnp_TxnRef,
-    vnp_OrderInfo,
-    vnp_TransactionDate,
-    vnp_CreateDate,
-    vnp_IpAddr: ipAddr,
-    vnp_SecureHash,
-  }
-
-  request(
-    {
-      url: vnp_Api,
-      method: "POST",
-      json: true,
-      body: dataObj,
-    },
-    (error, response, body) => {
-      if (error) {
-        console.error("Error querying transaction:", error)
-        res.status(500).json({ error: "Internal server error" })
-      } else {
-        console.log("Transaction query response:", response.body)
-        res.json(response.body)
-      }
-    },
-  )
-})
-
-router.post("/refund", (req: Request, res: Response) => {
-  process.env.TZ = "Asia/Ho_Chi_Minh"
-  const date = new Date()
-
-  const vnp_TmnCode = config.get<string>("vnp_TmnCode")
-  const secretKey = config.get<string>("vnp_HashSecret")
-  const vnp_Api = config.get<string>("vnp_Api")
-
-  const {
-    orderId: vnp_TxnRef,
-    transDate: vnp_TransactionDate,
-    amount: vnp_Amount,
-    transType: vnp_TransactionType,
-    user: vnp_CreateBy,
-  } = req.body
-
-  const vnp_RequestId = moment(date).format("HHmmss")
-  const vnp_Version = "2.1.0"
-  const vnp_Command = "refund"
-  const vnp_OrderInfo = "Hoan tien GD ma:" + vnp_TxnRef
-
-  const ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress
-
-  const vnp_CreateDate = moment(date).format("YYYYMMDDHHmmss")
-  const vnp_TransactionNo = "0"
-
-  const data = [
-    vnp_RequestId,
-    vnp_Version,
-    vnp_Command,
-    vnp_TmnCode,
-    vnp_TransactionType,
-    vnp_TxnRef,
-    vnp_Amount * 100,
-    vnp_TransactionNo,
-    vnp_TransactionDate,
-    vnp_CreateBy,
-    vnp_CreateDate,
-    ipAddr,
-    vnp_OrderInfo,
-  ].join("|")
-
-  const hmac = crypto.createHmac("sha512", secretKey)
-  const vnp_SecureHash = hmac.update(Buffer.from(data, "utf-8")).digest("hex")
-
-  const dataObj = {
-    vnp_RequestId,
-    vnp_Version,
-    vnp_Command,
-    vnp_TmnCode,
-    vnp_TransactionType,
-    vnp_TxnRef,
-    vnp_Amount: vnp_Amount * 100,
-    vnp_TransactionNo,
-    vnp_CreateBy,
-    vnp_OrderInfo,
-    vnp_TransactionDate,
-    vnp_CreateDate,
-    vnp_IpAddr: ipAddr,
-    vnp_SecureHash,
-  }
-
-  request(
-    {
-      url: vnp_Api,
-      method: "POST",
-      json: true,
-      body: dataObj,
-    },
-    (error, response, body) => {
-      if (error) {
-        console.error("Error processing refund:", error)
-        res.status(500).json({ error: "Internal server error" })
-      } else {
-        console.log("Refund response:", response.body)
-        res.json(response.body)
-      }
-    },
-  )
 })
 
 export default router

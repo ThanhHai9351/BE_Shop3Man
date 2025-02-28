@@ -79,6 +79,23 @@ const deleteCart = async (req: Request, res: Response): Promise<Response> => {
   }
 }
 
-const CartControlller = { createCart, getAllCart, deleteCart }
+const removeAllCart = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json(GlobalResponse(StatusCodes.UNAUTHORIZED, ReasonPhrases.UNAUTHORIZED))
+    }
+    const token = authHeader.split(" ")[1]
+    return await CartService.removeAllCartService(token, res)
+  } catch {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(GlobalResponse(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR))
+  }
+} 
+
+const CartControlller = { createCart, getAllCart, deleteCart, removeAllCart }
 
 export default CartControlller
