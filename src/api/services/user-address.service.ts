@@ -44,6 +44,12 @@ const getAllAddressService = async (token: string, res: Response) => {
         .status(StatusCodes.UNAUTHORIZED)
         .json(GlobalResponse(StatusCodes.UNAUTHORIZED, ReasonPhrases.UNAUTHORIZED))
     }
+
+    if (!data._id) {
+      console.error("User ID not found in token data:", data)
+      return res.status(StatusCodes.BAD_REQUEST).json(GlobalResponse(StatusCodes.BAD_REQUEST, "Invalid user data"))
+    }
+
     const address = await UserAddress.find({ userId: data._id }).sort({ createdAt: -1 })
     return res.status(StatusCodes.OK).json(GlobalResponseData(StatusCodes.OK, ReasonPhrases.OK, address))
   } catch {

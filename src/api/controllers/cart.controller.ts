@@ -94,7 +94,7 @@ const removeAllCart = async (req: Request, res: Response): Promise<Response> => 
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(GlobalResponse(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR))
   }
-} 
+}
 
 const CartControlller = { createCart, getAllCart, deleteCart, removeAllCart }
 
