@@ -176,6 +176,20 @@ const deleteUserService = async (id: string, res: Response) => {
   }
 }
 
+const getUserByIdService = async (id: string, res: Response) => {
+  try {
+    const user = await User.findById(id)
+    if (!user) {
+      return res.status(StatusCodes.BAD_REQUEST).json(GlobalResponse(StatusCodes.BAD_REQUEST, "User not found!"))
+    }
+    return res.status(StatusCodes.OK).json(GlobalResponseData(StatusCodes.OK, ReasonPhrases.OK, user))
+  } catch {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(GlobalResponse(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR))
+  }
+}
+
 const UserService = {
   createUserService,
   loginService,
@@ -183,6 +197,7 @@ const UserService = {
   getAllUsers,
   updateUserService,
   deleteUserService,
+  getUserByIdService,
 }
 
 export default UserService

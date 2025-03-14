@@ -26,6 +26,7 @@ const createAddress = async (req: Request, res: Response): Promise<Response> => 
 }
 
 const getAllAddress = async (req: Request, res: Response): Promise<Response> => {
+  console.log('vao day');
   try {
     const authHeader = req.headers.authorization
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -52,7 +53,7 @@ const deleteAddress = async (req: Request, res: Response): Promise<Response> => 
         .json(GlobalResponse(StatusCodes.UNAUTHORIZED, ReasonPhrases.UNAUTHORIZED))
     }
     const token = authHeader.split(" ")[1]
-    return await UserAddressService.deleteAddressService(token, id, res)   
+    return await UserAddressService.deleteAddressService(token, id, res)
   } catch {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
